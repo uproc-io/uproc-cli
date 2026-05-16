@@ -2,6 +2,21 @@
 
 All notable changes in `bizzmod-cli` should be documented in this file.
 
+## 2026-05-16
+
+### Added
+- Added `uproc processes module submit-public-form <customer_domain> <form_slug> <payload_json>` command to submit public Form Management payloads through `/api/v1/external/public/modules/form-management/forms/{customer_domain}/{form_slug}/submit`.
+- Added payload parsing/validation helpers for the new command, including explicit invalid JSON and empty payload error paths.
+- Added tests for command registration, payload parsing, and public submission path building.
+
+### Changed
+- Updated command docs in `README.md` to include the new module command.
+
+### Verification
+- `go test ./...`
+- `go vet ./...`
+- `go build -o uproc`
+
 ## 2026-04-16
 
 ### Added

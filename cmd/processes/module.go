@@ -29,8 +29,61 @@ func newModuleCmd() *cobra.Command {
 	moduleCmd.AddCommand(newModuleSettingsTabCmd())
 	moduleCmd.AddCommand(newModuleUploadCmd())
 	moduleCmd.AddCommand(newModuleWebhookCmd())
+	moduleCmd.AddCommand(newModuleSubmitPublicFormCmd())
 
 	return moduleCmd
+}
+
+func newModuleSubmitPublicFormCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "submit-public-form <customer_domain> <form_slug> <payload_json>",
+		Short: "Submit a public form payload for form-management",
+		Args:  cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			client, err := mustClient()
+			if err != nil {
+				return err
+			}
+
+			payloadBody, err := parsePublicFormSubmissionPayload(args[2])
+			if err != nil {
+				return err
+			}
+
+			path := buildPublicFormSubmissionPath("form-management", args[0], args[1])
+			body, status, reqErr := client.Do("POST", path, payloadBody)
+			return printResponse(cmd, body, status, reqErr)
+		},
+	}
+}
+
+func parsePublicFormSubmissionPayload(input string) ([]byte, error) {
+	trimmed := strings.TrimSpace(input)
+	if trimmed == "" {
+		return nil, fmt.Errorf("payload_json is required")
+	}
+
+	var payload map[string]any
+	if err := json.Unmarshal([]byte(trimmed), &payload); err != nil {
+		return nil, fmt.Errorf("invalid payload_json: %w", err)
+	}
+
+	requestBody := map[string]any{"payload": payload}
+	encoded, err := json.Marshal(requestBody)
+	if err != nil {
+		return nil, fmt.Errorf("cannot encode payload_json: %w", err)
+	}
+
+	return encoded, nil
+}
+
+func buildPublicFormSubmissionPath(moduleSlug, customerDomain, formSlug string) string {
+	return fmt.Sprintf(
+		"/api/v1/external/public/modules/%s/forms/%s/%s/submit",
+		url.PathEscape(strings.TrimSpace(moduleSlug)),
+		url.PathEscape(strings.TrimSpace(customerDomain)),
+		url.PathEscape(strings.TrimSpace(formSlug)),
+	)
 }
 
 func newModuleSettingsTabsCmd() *cobra.Command {

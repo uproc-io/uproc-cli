@@ -9,16 +9,17 @@ func TestNewModuleCmdContainsSettingsReadOnlyCommands(t *testing.T) {
 	}
 
 	expected := map[string]bool{
-		"list":          false,
-		"get":           false,
-		"overview":      false,
-		"collections":   false,
-		"collection":    false,
-		"data":          false,
-		"settings-tabs": false,
-		"settings-tab":  false,
-		"upload":        false,
-		"webhook":       false,
+		"list":               false,
+		"get":                false,
+		"overview":           false,
+		"collections":        false,
+		"collection":         false,
+		"data":               false,
+		"settings-tabs":      false,
+		"settings-tab":       false,
+		"upload":             false,
+		"webhook":            false,
+		"submit-public-form": false,
 	}
 
 	for _, child := range cmd.Commands() {

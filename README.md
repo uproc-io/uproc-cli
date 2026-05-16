@@ -170,6 +170,7 @@ uproc processes module settings-tab <module_slug> <tab_key>
 uproc processes module upload <module_slug> <collection_name> <file_path>
 uproc processes module upload <module_slug> <collection_name> "*.pdf"
 uproc processes module webhook <module_slug> <collection_name> <payload_json>
+uproc processes module submit-public-form <customer_domain> <form_slug> <payload_json>
 ```
 
 `module upload` accepts one or more file paths and glob masks. When a mask matches multiple files, CLI uploads each file and prints per-file progress and result.
