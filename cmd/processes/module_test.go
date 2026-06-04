@@ -33,4 +33,12 @@ func TestNewModuleCmdContainsSettingsReadOnlyCommands(t *testing.T) {
 			t.Fatalf("expected module subcommand %s", name)
 		}
 	}
+
+	deprecatedCmd, _, err := cmd.Find([]string{"submit-public-form"})
+	if err != nil {
+		t.Fatalf("expected to find deprecated submit-public-form command: %v", err)
+	}
+	if deprecatedCmd.Deprecated == "" {
+		t.Fatal("expected submit-public-form to be marked deprecated")
+	}
 }

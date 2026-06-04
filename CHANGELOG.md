@@ -4,6 +4,19 @@ All notable changes in `bizzmod-cli` should be documented in this file.
 
 ## 2026-06-04
 
+### Changed
+- Switched `uproc processes module submit-public-form` from the legacy public forms path under `form-management` to the canonical `form-generator` route.
+- Updated CLI command help, README examples, and public-form path tests so they match the canonical forms slug now used by backend runtime and docs.
+- Added `uproc processes forms submit-public` as the canonical business-verb CLI command for public form submissions, and kept `uproc processes module submit-public-form` as a deprecated compatibility alias for one transition cycle.
+- Extended the new `uproc processes forms` business-verb group with first-class lifecycle commands: `publish`, `archive`, `restore`, and `mark-submission-processed`.
+- Completed the forms mini-batch with `archive-submission`.
+- Added the next three business-verb CLI groups: `candidate`, `support`, and `approval`, aligned with existing backend/MCP workflows for `candidate-evaluation`, `customer-care`, and `approval-management`.
+
+### Verification
+- `go test ./...`
+- `go vet ./...`
+- `go build -o uproc`
+
 ### Added
 - Added `cli/TODO.md` as the repository-level tracker for pending work, partially applied requirements, blockers, and follow-ups.
 

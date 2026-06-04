@@ -170,10 +170,72 @@ uproc processes module settings-tab <module_slug> <tab_key>
 uproc processes module upload <module_slug> <collection_name> <file_path>
 uproc processes module upload <module_slug> <collection_name> "*.pdf"
 uproc processes module webhook <module_slug> <collection_name> <payload_json>
-uproc processes module submit-public-form <customer_domain> <form_slug> <payload_json>
 ```
 
 `module upload` accepts one or more file paths and glob masks. When a mask matches multiple files, CLI uploads each file and prints per-file progress and result.
+
+### Forms commands
+
+```bash
+uproc processes forms submit-public <customer_domain> <form_slug> <payload_json>
+uproc processes forms publish <form_id>
+uproc processes forms archive <form_id>
+uproc processes forms archive-submission <submission_id>
+uproc processes forms restore <form_id>
+uproc processes forms mark-submission-processed <submission_id>
+```
+
+`forms submit-public` is the canonical business-verb command for public form submissions and posts to the public route under `form-generator`.
+
+The lifecycle commands call the generic external action routes for `form-generator`:
+- `publish <form_id>`
+- `archive <form_id>`
+- `archive-submission <submission_id>`
+- `restore <form_id>`
+- `mark-submission-processed <submission_id>`
+
+Compatibility alias (deprecated):
+
+```bash
+uproc processes module submit-public-form <customer_domain> <form_slug> <payload_json>
+```
+
+### Candidate commands
+
+```bash
+uproc processes candidate create-profile <item_json>
+uproc processes candidate create-job-opening <item_json>
+uproc processes candidate create-application <item_json>
+uproc processes candidate move-stage <application_id> <stage>
+uproc processes candidate update-status <application_id> <status>
+uproc processes candidate create-evaluation <item_json>
+```
+
+These commands wrap the existing `candidate-evaluation` business verbs.
+
+### Support commands
+
+```bash
+uproc processes support create-ticket <item_json>
+uproc processes support assign-ticket <ticket_id> <assignee>
+uproc processes support reply-ticket <ticket_id> <message>
+uproc processes support mark-resolved <ticket_id>
+uproc processes support close-ticket <ticket_id>
+uproc processes support reopen-ticket <ticket_id>
+```
+
+These commands wrap the existing `customer-care` business verbs.
+
+### Approval commands
+
+```bash
+uproc processes approval approve <request_id>
+uproc processes approval reject <request_id>
+uproc processes approval reassign <request_id> <approver> [note]
+uproc processes approval cancel <request_id>
+```
+
+These commands wrap the existing `approval-management` business verbs.
 
 ### Admin commands
 

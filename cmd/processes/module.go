@@ -35,26 +35,32 @@ func newModuleCmd() *cobra.Command {
 }
 
 func newModuleSubmitPublicFormCmd() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:   "submit-public-form <customer_domain> <form_slug> <payload_json>",
-		Short: "Submit a public form payload for form-management",
+		Short: "Submit a public form payload for form-generator",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			client, err := mustClient()
-			if err != nil {
-				return err
-			}
-
-			payloadBody, err := parsePublicFormSubmissionPayload(args[2])
-			if err != nil {
-				return err
-			}
-
-			path := buildPublicFormSubmissionPath("form-management", args[0], args[1])
-			body, status, reqErr := client.Do("POST", path, payloadBody)
-			return printResponse(cmd, body, status, reqErr)
+			return runPublicFormSubmission(cmd, args[0], args[1], args[2])
 		},
 	}
+	cmd.Deprecated = "use 'uproc processes forms submit-public' instead"
+	return cmd
+}
+
+func runPublicFormSubmission(cmd *cobra.Command, customerDomain, formSlug, payloadJSON string) error {
+	client, err := mustClient()
+	if err != nil {
+		return err
+	}
+
+	payloadBody, err := parsePublicFormSubmissionPayload(payloadJSON)
+	if err != nil {
+		return err
+	}
+
+	path := buildPublicFormSubmissionPath("form-generator", customerDomain, formSlug)
+	body, status, reqErr := client.Do("POST", path, payloadBody)
+	return printResponse(cmd, body, status, reqErr)
 }
 
 func parsePublicFormSubmissionPayload(input string) ([]byte, error) {

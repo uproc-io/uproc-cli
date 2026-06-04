@@ -40,8 +40,8 @@ func TestParsePublicFormSubmissionPayloadRejectsEmptyInput(t *testing.T) {
 }
 
 func TestBuildPublicFormSubmissionPath(t *testing.T) {
-	path := buildPublicFormSubmissionPath("form-management", "demo-sl", "contact-form")
-	expected := "/api/v1/external/public/modules/form-management/forms/demo-sl/contact-form/submit"
+	path := buildPublicFormSubmissionPath("form-generator", "demo-sl", "contact-form")
+	expected := "/api/v1/external/public/modules/form-generator/forms/demo-sl/contact-form/submit"
 	if path != expected {
 		t.Fatalf("unexpected path\nwant: %s\ngot:  %s", expected, path)
 	}
