@@ -4,6 +4,17 @@ All notable changes in `bizzmod-cli` should be documented in this file.
 
 ## 2026-06-04
 
+### Added
+- Added `uproc processes admin usage list` and `uproc processes admin usage summary` to consume the external admin usage endpoints with filters for customer, process, source, and date range.
+
+### Changed
+- Updated CLI docs so admin usage commands appear alongside the existing admin read operations.
+
+### Verification
+- `go test ./...`
+- `go vet ./...`
+- `go build -o uproc`
+
 ### Changed
 - Switched `uproc processes module submit-public-form` from the legacy public forms path under `form-management` to the canonical `form-generator` route.
 - Updated CLI command help, README examples, and public-form path tests so they match the canonical forms slug now used by backend runtime and docs.

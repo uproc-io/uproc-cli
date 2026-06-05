@@ -517,6 +517,14 @@ uproc processes admin tickets get <ticket_id>
 
 uproc processes admin logs --module-slug <module_slug> [--level all --page 1]
 uproc processes admin ai-requests [--customer-id 1 --module-slug financial-reconciliation --page 1 --limit 25]
+uproc processes admin usage list [--customer-id 1 --module-slug financial-reconciliation --source all --from-date 2026-06-01 --to-date 2026-06-05 --page 1 --limit 25]
+uproc processes admin usage summary [--customer-id 1 --module-slug financial-reconciliation --source mcp --from-date 2026-06-01 --to-date 2026-06-05]
+uproc processes admin changelog
+```
+
+These commands wrap the existing external admin read endpoints.
+
+```bash
 uproc processes admin changelog
 ```
 

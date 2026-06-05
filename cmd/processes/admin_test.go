@@ -20,6 +20,7 @@ func TestNewAdminCmdContainsExpectedResources(t *testing.T) {
 		"tickets":     false,
 		"logs":        false,
 		"ai-requests": false,
+		"usage":       false,
 		"changelog":   false,
 	}
 
@@ -32,6 +33,30 @@ func TestNewAdminCmdContainsExpectedResources(t *testing.T) {
 	for name, found := range expected {
 		if !found {
 			t.Fatalf("expected admin subcommand %s", name)
+		}
+	}
+}
+
+func TestAdminUsageContainsListAndSummary(t *testing.T) {
+	cmd := newAdminUsageCmd()
+	if cmd == nil {
+		t.Fatal("expected admin usage command")
+	}
+
+	expected := map[string]bool{
+		"list":    false,
+		"summary": false,
+	}
+
+	for _, child := range cmd.Commands() {
+		if _, ok := expected[child.Name()]; ok {
+			expected[child.Name()] = true
+		}
+	}
+
+	for name, found := range expected {
+		if !found {
+			t.Fatalf("expected usage subcommand %s", name)
 		}
 	}
 }

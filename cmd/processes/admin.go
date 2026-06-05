@@ -20,6 +20,7 @@ func newAdminCmd() *cobra.Command {
 	adminCmd.AddCommand(newAdminTicketsCmd())
 	adminCmd.AddCommand(newAdminLogsCmd())
 	adminCmd.AddCommand(newAdminAIRequestsCmd())
+	adminCmd.AddCommand(newAdminUsageCmd())
 	adminCmd.AddCommand(newAdminChangelogCmd())
 
 	return adminCmd
@@ -434,6 +435,119 @@ func newAdminAIRequestsCmd() *cobra.Command {
 	cmd.Flags().StringVar(&moduleSlug, "module-slug", "", "optional module slug filter")
 	cmd.Flags().IntVar(&page, "page", 1, "page number")
 	cmd.Flags().IntVar(&limit, "limit", 25, "items per page")
+	return cmd
+}
+
+func newAdminUsageCmd() *cobra.Command {
+	usageCmd := &cobra.Command{
+		Use:   "usage",
+		Short: "Read usage statistics",
+	}
+
+	usageCmd.AddCommand(newAdminUsageListCmd())
+	usageCmd.AddCommand(newAdminUsageSummaryCmd())
+
+	return usageCmd
+}
+
+func newAdminUsageListCmd() *cobra.Command {
+	var customerID int
+	var moduleSlug string
+	var source string
+	var fromDate string
+	var toDate string
+	var page int
+	var limit int
+
+	cmd := &cobra.Command{
+		Use:   "list",
+		Short: "List usage events",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			client, err := mustClient()
+			if err != nil {
+				return err
+			}
+
+			queryParts := []string{fmt.Sprintf("page=%d", page), fmt.Sprintf("limit=%d", limit)}
+			if customerID > 0 {
+				queryParts = append(queryParts, fmt.Sprintf("customer_id=%d", customerID))
+			}
+			if strings.TrimSpace(moduleSlug) != "" {
+				queryParts = append(queryParts, fmt.Sprintf("module_slug=%s", moduleSlug))
+			}
+			if strings.TrimSpace(source) != "" && source != "all" {
+				queryParts = append(queryParts, fmt.Sprintf("source=%s", source))
+			}
+			if strings.TrimSpace(fromDate) != "" {
+				queryParts = append(queryParts, fmt.Sprintf("from_date=%s", fromDate))
+			}
+			if strings.TrimSpace(toDate) != "" {
+				queryParts = append(queryParts, fmt.Sprintf("to_date=%s", toDate))
+			}
+
+			path := fmt.Sprintf("/api/v1/external/admin/usage?%s", strings.Join(queryParts, "&"))
+			body, status, reqErr := client.Do("GET", path, nil)
+			return printResponse(cmd, body, status, reqErr)
+		},
+	}
+
+	cmd.Flags().IntVar(&customerID, "customer-id", 0, "optional customer id filter")
+	cmd.Flags().StringVar(&moduleSlug, "module-slug", "", "optional module slug filter")
+	cmd.Flags().StringVar(&source, "source", "all", "optional source filter: all, api, cli, mcp")
+	cmd.Flags().StringVar(&fromDate, "from-date", "", "optional from date (YYYY-MM-DD)")
+	cmd.Flags().StringVar(&toDate, "to-date", "", "optional to date (YYYY-MM-DD)")
+	cmd.Flags().IntVar(&page, "page", 1, "page number")
+	cmd.Flags().IntVar(&limit, "limit", 25, "items per page")
+	return cmd
+}
+
+func newAdminUsageSummaryCmd() *cobra.Command {
+	var customerID int
+	var moduleSlug string
+	var source string
+	var fromDate string
+	var toDate string
+
+	cmd := &cobra.Command{
+		Use:   "summary",
+		Short: "Show usage summary",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			client, err := mustClient()
+			if err != nil {
+				return err
+			}
+
+			queryParts := []string{}
+			if customerID > 0 {
+				queryParts = append(queryParts, fmt.Sprintf("customer_id=%d", customerID))
+			}
+			if strings.TrimSpace(moduleSlug) != "" {
+				queryParts = append(queryParts, fmt.Sprintf("module_slug=%s", moduleSlug))
+			}
+			if strings.TrimSpace(source) != "" && source != "all" {
+				queryParts = append(queryParts, fmt.Sprintf("source=%s", source))
+			}
+			if strings.TrimSpace(fromDate) != "" {
+				queryParts = append(queryParts, fmt.Sprintf("from_date=%s", fromDate))
+			}
+			if strings.TrimSpace(toDate) != "" {
+				queryParts = append(queryParts, fmt.Sprintf("to_date=%s", toDate))
+			}
+
+			path := "/api/v1/external/admin/usage/summary"
+			if len(queryParts) > 0 {
+				path = fmt.Sprintf("%s?%s", path, strings.Join(queryParts, "&"))
+			}
+			body, status, reqErr := client.Do("GET", path, nil)
+			return printResponse(cmd, body, status, reqErr)
+		},
+	}
+
+	cmd.Flags().IntVar(&customerID, "customer-id", 0, "optional customer id filter")
+	cmd.Flags().StringVar(&moduleSlug, "module-slug", "", "optional module slug filter")
+	cmd.Flags().StringVar(&source, "source", "all", "optional source filter: all, api, cli, mcp")
+	cmd.Flags().StringVar(&fromDate, "from-date", "", "optional from date (YYYY-MM-DD)")
+	cmd.Flags().StringVar(&toDate, "to-date", "", "optional to date (YYYY-MM-DD)")
 	return cmd
 }
 

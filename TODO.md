@@ -4,7 +4,7 @@ Use this file to track pending CLI work, partially applied requirements, blocker
 
 ## Active
 
-No active CLI pending items recorded yet.
+- Validate whether admin usage commands also need CSV/export support once backend exposes an external export route.
 
 ## Planned
 
@@ -16,6 +16,7 @@ No blocked CLI items recorded yet.
 
 ## Done Recently
 
+- Added `uproc processes admin usage list` and `uproc processes admin usage summary`, aligned with the external admin usage endpoints and filters.
 - Added repository-level TODO tracking policy for CLI agent workflows.
 - Updated `module submit-public-form` to use the canonical `form-generator` public route and synced the backend API/CLI docs accordingly.
 - Added `forms submit-public` as the canonical CLI business verb for public forms, while keeping `module submit-public-form` as a deprecated compatibility alias.
