@@ -12,14 +12,27 @@ Scope and precedence
 - Keep changes minimal and aligned with existing CLI repository conventions.
 
 --------------------------------------------------------------------------------
-TODO.md policy
+Tracking policy (mandatory)
 --------------------------------------------------------------------------------
 
+### TODO.md
 - Before starting work, read `TODO.md` in the `cli/` repository root.
 - Use `TODO.md` to detect pending work, partially applied requirements, blockers, and follow-ups before making changes.
 - When work leaves unfinished scope or reveals new follow-ups, update `TODO.md` in the same change set.
-- When completing pending work, update the corresponding `TODO.md` entries so the repository backlog stays current.
+- When completing pending items, move them to `DONE.md` and remove from `TODO.md`.
+- **Date grouping**: items within each section must be grouped under `## YYYY-MM-DD` headers.
 - Treat `TODO.md` as the operational handoff and pending-work tracker for CLI agent workflows.
+
+### DONE.md
+- Maintain `DONE.md` as the permanent record of completed CLI work.
+- When closing a TODO, move the entry to `DONE.md` under a `## YYYY-MM-DD` header.
+- `TODO.md` should never have a lingering "Done Recently" section.
+
+### REVIEW.md
+- Maintain `REVIEW.md` as the canonical log for CLI items needing human review.
+- A review item is any intentionally omitted or postponed scope decision, technical debt, workaround, command/flag shortcut, or unresolved design trade-off.
+- Every review entry must include: date, area, item, reason, impact, and follow-up status.
+- If no review item exists in a change set, do not add a placeholder entry.
 
 --------------------------------------------------------------------------------
 Build, lint, and test commands
@@ -69,11 +82,8 @@ Code style and safety
 - Add comments only when needed to explain non-obvious behavior.
 
 --------------------------------------------------------------------------------
-Changelog policy
+Tracking policy
 --------------------------------------------------------------------------------
 
-- `cli/CHANGELOG.md` is mandatory.
-- Any functional change in `cli/` (commands, flags, args, request contracts, auth flow, output behavior, docs semantics) must include a matching `cli/CHANGELOG.md` entry in the same change set.
-- Include verification commands in each changelog entry (`go test ./...`, `go vet ./...`, `go build -o uproc` at minimum).
-
-Keep this file updated when CLI commands, conventions, or release workflows are formalized.
+- Work is tracked via `TODO.md` (pending), `DONE.md` (completed), and `REVIEW.md` (deferred decisions).
+- No `CHANGELOG.md` is maintained.
