@@ -318,7 +318,7 @@ uproc processes signals activate <signal_id>
 uproc processes signals close <signal_id>
 ```
 
-These commands wrap the existing `business-signals` business verbs.
+These commands wrap the existing `market-signals` business verbs.
 
 ### Editorial commands
 
