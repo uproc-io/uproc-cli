@@ -648,6 +648,7 @@ Examples:
 func newAdminCustomersImportCmd() *cobra.Command {
 	var zipBase64 string
 	var mode string
+	var confirm bool
 
 	cmd := &cobra.Command{
 		Use:   "import",
@@ -678,7 +679,7 @@ Examples:
 				"arguments": map[string]any{
 					"zip_base64": zipBase64,
 					"mode":       mode,
-					"confirm":    false,
+					"confirm":    confirm,
 				},
 			})
 
@@ -689,6 +690,7 @@ Examples:
 
 	cmd.Flags().StringVar(&zipBase64, "zip-base64", "", "ZIP file content as base64 string")
 	cmd.Flags().StringVar(&mode, "mode", "upsert", "Import mode: append, replace, or upsert")
+	cmd.Flags().BoolVar(&confirm, "confirm", false, "Confirm import execution (default false = preview only)")
 	return cmd
 }
 
