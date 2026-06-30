@@ -2,3 +2,5 @@ uproc
 .env
 dist/
 config.yml
+*.zip
+.DS_Store
