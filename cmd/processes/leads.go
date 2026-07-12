@@ -20,6 +20,7 @@ func newLeadManagementCmd() *cobra.Command {
 	leadsCmd.AddCommand(newLeadsSendProposalCmd())
 	leadsCmd.AddCommand(newLeadsRerunIntelligenceCmd())
 	leadsCmd.AddCommand(newLeadsUploadProposalCmd())
+	leadsCmd.AddCommand(newLeadsSendProposalVersionCmd())
 
 	return leadsCmd
 }
@@ -157,13 +158,9 @@ func newLeadsRerunIntelligenceCmd() *cobra.Command {
 }
 
 func newLeadsUploadProposalCmd() *cobra.Command {
-	var toEmail string
-	var subject string
-	var body string
-
 	cmd := &cobra.Command{
 		Use:   "upload-proposal <lead_id> <pdf_file>",
-		Short: "Upload a proposal PDF to a lead and optionally send by email",
+		Short: "Upload a proposal PDF to a lead and create a version (does NOT send)",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			leadID, err := parsePositiveIntArg("lead_id", args[0])
@@ -179,14 +176,37 @@ func newLeadsUploadProposalCmd() *cobra.Command {
 			pdfBase64 := base64.StdEncoding.EncodeToString(pdfBytes)
 
 			payload := map[string]any{
-				"lead_id":      leadID,
-				"pdf_content":  pdfBase64,
-				"file_name":    pdfPath,
-				"to_email":     toEmail,
-				"subject":      subject,
-				"body":         body,
+				"lead_id":     leadID,
+				"pdf_content": pdfBase64,
+				"file_name":   pdfPath,
 			}
-			return runModuleAction(cmd, "lead-management", "upload_and_send_proposal", payload)
+			return runModuleAction(cmd, "lead-management", "upload_proposal", payload)
+		},
+	}
+	return cmd
+}
+
+func newLeadsSendProposalVersionCmd() *cobra.Command {
+	var toEmail string
+	var subject string
+	var body string
+
+	cmd := &cobra.Command{
+		Use:   "send-proposal-version <version_id>",
+		Short: "Send an existing proposal version to the client by email",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			versionID, err := parsePositiveIntArg("version_id", args[0])
+			if err != nil {
+				return err
+			}
+			payload := map[string]any{
+				"version_id": versionID,
+				"to_email":   toEmail,
+				"subject":    subject,
+				"body":       body,
+			}
+			return runModuleAction(cmd, "lead-management", "send_proposal_version", payload)
 		},
 	}
 
