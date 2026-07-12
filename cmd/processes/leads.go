@@ -1,8 +1,10 @@
 package processes
 
 import (
+	"encoding/base64"
 	"fmt"
 	"net/url"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -17,6 +19,7 @@ func newLeadManagementCmd() *cobra.Command {
 	leadsCmd.AddCommand(newLeadsListCmd())
 	leadsCmd.AddCommand(newLeadsSendProposalCmd())
 	leadsCmd.AddCommand(newLeadsRerunIntelligenceCmd())
+	leadsCmd.AddCommand(newLeadsUploadProposalCmd())
 
 	return leadsCmd
 }
@@ -151,4 +154,45 @@ func newLeadsRerunIntelligenceCmd() *cobra.Command {
 			return runSingleIDAction(cmd, "lead-management", "rerun_lead_intelligence", "lead_id", args[0])
 		},
 	}
+}
+
+func newLeadsUploadProposalCmd() *cobra.Command {
+	var toEmail string
+	var subject string
+	var body string
+
+	cmd := &cobra.Command{
+		Use:   "upload-proposal <lead_id> <pdf_file>",
+		Short: "Upload a proposal PDF to a lead and optionally send by email",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			leadID, err := parsePositiveIntArg("lead_id", args[0])
+			if err != nil {
+				return err
+			}
+			pdfPath := args[1]
+
+			pdfBytes, err := os.ReadFile(pdfPath)
+			if err != nil {
+				return fmt.Errorf("reading PDF file: %w", err)
+			}
+			pdfBase64 := base64.StdEncoding.EncodeToString(pdfBytes)
+
+			payload := map[string]any{
+				"lead_id":      leadID,
+				"pdf_content":  pdfBase64,
+				"file_name":    pdfPath,
+				"to_email":     toEmail,
+				"subject":      subject,
+				"body":         body,
+			}
+			return runModuleAction(cmd, "lead-management", "upload_and_send_proposal", payload)
+		},
+	}
+
+	cmd.Flags().StringVar(&toEmail, "to-email", "", "Recipient email (default: lead's email)")
+	cmd.Flags().StringVar(&subject, "subject", "", "Email subject")
+	cmd.Flags().StringVar(&body, "body", "", "Email body")
+
+	return cmd
 }
