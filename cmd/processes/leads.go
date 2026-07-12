@@ -158,6 +158,8 @@ func newLeadsRerunIntelligenceCmd() *cobra.Command {
 }
 
 func newLeadsUploadProposalCmd() *cobra.Command {
+	var proposalKey string
+
 	cmd := &cobra.Command{
 		Use:   "upload-proposal <lead_id> <pdf_file>",
 		Short: "Upload a proposal PDF to a lead and create a version (does NOT send)",
@@ -176,13 +178,17 @@ func newLeadsUploadProposalCmd() *cobra.Command {
 			pdfBase64 := base64.StdEncoding.EncodeToString(pdfBytes)
 
 			payload := map[string]any{
-				"lead_id":     leadID,
-				"pdf_content": pdfBase64,
-				"file_name":   pdfPath,
+				"lead_id":       leadID,
+				"pdf_content":   pdfBase64,
+				"file_name":     pdfPath,
+				"proposal_key":  proposalKey,
 			}
 			return runModuleAction(cmd, "lead-management", "upload_proposal", payload)
 		},
 	}
+
+	cmd.Flags().StringVar(&proposalKey, "proposal-key", "", "Key to group versions (default: file name)")
+
 	return cmd
 }
 
