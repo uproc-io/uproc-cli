@@ -21,6 +21,7 @@ func newLeadManagementCmd() *cobra.Command {
 	leadsCmd.AddCommand(newLeadsRerunIntelligenceCmd())
 	leadsCmd.AddCommand(newLeadsUploadProposalCmd())
 	leadsCmd.AddCommand(newLeadsSendProposalVersionCmd())
+	leadsCmd.AddCommand(newLeadsDeleteProposalVersionCmd())
 
 	return leadsCmd
 }
@@ -221,4 +222,15 @@ func newLeadsSendProposalVersionCmd() *cobra.Command {
 	cmd.Flags().StringVar(&body, "body", "", "Email body")
 
 	return cmd
+}
+
+func newLeadsDeleteProposalVersionCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "delete-proposal-version <version_id>",
+		Short: "Delete a proposal version permanently",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return runSingleIDAction(cmd, "lead-management", "delete_proposal_version", "version_id", args[0])
+		},
+	}
 }
