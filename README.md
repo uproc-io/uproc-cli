@@ -421,6 +421,16 @@ uproc processes invoice get-pdf <invoice_id>
 
 These commands wrap the existing safe `sales-invoices` business verbs for already-created invoices.
 
+### VeriFactu commands
+
+```bash
+uproc processes sales-invoices verifactu resubmit <invoice_id>
+uproc processes sales-invoices verifactu backfill
+uproc processes sales-invoices verifactu xml <invoice_id>
+```
+
+`resubmit` retries the VeriFactu registration of an invoice, `backfill` registers already-issued invoices into the chain (F2 backlog), and `xml` fetches the generated AEAT SF v1.1 file.
+
 ### Invoice lines commands
 
 ```bash
@@ -454,9 +464,10 @@ uproc processes sync list-records [--page 1]
 uproc processes sync run <workflow_id>
 uproc processes sync preview <workflow_id> [limit]
 uproc processes sync dry-run <workflow_id> [limit]
+uproc processes sync push-to-erp --credential <id> --resource invoices --json '{"number":"H-1","total":121}'
 ```
 
-These commands wrap the existing `data-sync` business verbs.
+These commands wrap the existing `data-sync` business verbs. `push-to-erp` writes a record to an ERP provider using a stored ERP credential (create/update/delete).
 
 ### Leads commands
 

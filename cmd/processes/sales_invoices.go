@@ -1,6 +1,10 @@
 package processes
 
-import "github.com/spf13/cobra"
+import (
+	"fmt"
+
+	"github.com/spf13/cobra"
+)
 
 func newSalesInvoicesCmd() *cobra.Command {
 	invoiceCmd := &cobra.Command{
@@ -17,8 +21,56 @@ func newSalesInvoicesCmd() *cobra.Command {
 	invoiceCmd.AddCommand(newCollectionListCmd("list-lines", "List invoice lines", "sales-invoices", "invoice_lines"))
 	invoiceCmd.AddCommand(newInvoiceLinesUpdateCmd())
 	invoiceCmd.AddCommand(newInvoiceLinesDeleteCmd())
+	invoiceCmd.AddCommand(newSalesInvoicesVerifactuCmd())
 
 	return invoiceCmd
+}
+
+func newSalesInvoicesVerifactuCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "verifactu",
+		Short: "VeriFactu (Spain) registration helpers",
+	}
+	cmd.AddCommand(
+		&cobra.Command{
+			Use:   "resubmit <invoice_id>",
+			Short: "Retry the VeriFactu registration of an invoice (re-sends the stored XML)",
+			Args:  cobra.ExactArgs(1),
+			RunE: func(c *cobra.Command, args []string) error {
+				id, err := parsePositiveIntArg("invoice_id", args[0])
+				if err != nil {
+					return err
+				}
+				return runModuleAction(c, "sales-invoices", "resubmit_verifactu", map[string]any{"invoice_id": id})
+			},
+		},
+		&cobra.Command{
+			Use:   "backfill",
+			Short: "Register already-issued invoices into the VeriFactu chain (F2 backlog)",
+			RunE: func(c *cobra.Command, args []string) error {
+				return runModuleAction(c, "sales-invoices", "backfill_verifactu", map[string]any{})
+			},
+		},
+		&cobra.Command{
+			Use:   "xml <invoice_id>",
+			Short: "Fetch the AEAT SF v1.1 XML generated for an invoice",
+			Args:  cobra.ExactArgs(1),
+			RunE: func(c *cobra.Command, args []string) error {
+				id, err := parsePositiveIntArg("invoice_id", args[0])
+				if err != nil {
+					return err
+				}
+				client, err := mustClient()
+				if err != nil {
+					return err
+				}
+				path := fmt.Sprintf("/api/v1/external/modules/sales-invoices/data/invoices/%d/verifactu_xml", id)
+				respBody, status, reqErr := client.Do("GET", path, nil)
+				return printResponse(c, respBody, status, reqErr)
+			},
+		},
+	)
+	return cmd
 }
 
 func newInvoiceCmd() *cobra.Command {
