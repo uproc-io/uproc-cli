@@ -432,6 +432,19 @@ uproc processes invoice-lines delete <invoice_id> <line_id>
 
 These commands wrap the existing safe `sales-invoices` invoice line verbs.
 
+### Purchase invoice commands
+
+```bash
+uproc processes purchase-invoices list [--page 1]
+uproc processes purchase-invoices list-lines [--page 1]
+uproc processes purchase-invoices list-payments [--page 1]
+uproc processes purchase-invoices validate <id> [reason]
+uproc processes purchase-invoices pay <id> [reason]
+uproc processes purchase-invoices assign-from-ingest <invoice_id> [payload_json]
+```
+
+These commands wrap the existing `purchase-invoices` business verbs (validate/pay via the module status endpoint, assign via `assign_from_ingest`).
+
 ### Sync commands
 
 ```bash
