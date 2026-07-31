@@ -2,19 +2,19 @@ package processes
 
 import "github.com/spf13/cobra"
 
-func newInvoiceGeneratorCmd() *cobra.Command {
+func newSalesInvoicesCmd() *cobra.Command {
 	invoiceCmd := &cobra.Command{
-		Use:   "invoice-generator",
+		Use:   "sales-invoices",
 		Short: "Business verbs for invoice generator workflows",
 	}
 
 	invoiceCmd.AddCommand(newInvoiceIssueCmd())
-	invoiceCmd.AddCommand(newCollectionListCmd("list", "List invoices", "invoice-generator", "invoices"))
+	invoiceCmd.AddCommand(newCollectionListCmd("list", "List invoices", "sales-invoices", "invoices"))
 	invoiceCmd.AddCommand(newInvoiceRectifyCmd())
 	invoiceCmd.AddCommand(newInvoiceSendCmd())
 	invoiceCmd.AddCommand(newInvoiceGetPDFCmd())
 	invoiceCmd.AddCommand(newInvoiceLinesAddCmd())
-	invoiceCmd.AddCommand(newCollectionListCmd("list-lines", "List invoice lines", "invoice-generator", "invoice_lines"))
+	invoiceCmd.AddCommand(newCollectionListCmd("list-lines", "List invoice lines", "sales-invoices", "invoice_lines"))
 	invoiceCmd.AddCommand(newInvoiceLinesUpdateCmd())
 	invoiceCmd.AddCommand(newInvoiceLinesDeleteCmd())
 
@@ -22,10 +22,10 @@ func newInvoiceGeneratorCmd() *cobra.Command {
 }
 
 func newInvoiceCmd() *cobra.Command {
-	cmd := newInvoiceGeneratorCmd()
+	cmd := newSalesInvoicesCmd()
 	cmd.Use = "invoice"
 	cmd.Hidden = true
-	cmd.Long = "DEPRECATED: use 'invoice-generator' instead"
+	cmd.Long = "DEPRECATED: use 'sales-invoices' instead"
 	return cmd
 }
 
@@ -35,7 +35,7 @@ func newInvoiceGetPDFCmd() *cobra.Command {
 		Short: "Get the preview URL for an invoice PDF",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return runSingleIDAction(cmd, "invoice-generator", "get_invoice_pdf", "invoice_id", args[0])
+			return runSingleIDAction(cmd, "sales-invoices", "get_invoice_pdf", "invoice_id", args[0])
 		},
 	}
 }
@@ -46,7 +46,7 @@ func newInvoiceIssueCmd() *cobra.Command {
 		Short: "Issue an invoice",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return runSingleIDAction(cmd, "invoice-generator", "issue_invoice", "invoice_id", args[0])
+			return runSingleIDAction(cmd, "sales-invoices", "issue_invoice", "invoice_id", args[0])
 		},
 	}
 }
@@ -65,7 +65,7 @@ func newInvoiceRectifyCmd() *cobra.Command {
 			if len(args) == 2 {
 				payload["reason"] = args[1]
 			}
-			return runModuleAction(cmd, "invoice-generator", "rectify_invoice", payload)
+			return runModuleAction(cmd, "sales-invoices", "rectify_invoice", payload)
 		},
 	}
 }
@@ -90,7 +90,7 @@ func newInvoiceSendCmd() *cobra.Command {
 			if len(args) == 4 {
 				payload["message"] = args[3]
 			}
-			return runModuleAction(cmd, "invoice-generator", "send_invoice", payload)
+			return runModuleAction(cmd, "sales-invoices", "send_invoice", payload)
 		},
 	}
 }

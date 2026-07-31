@@ -14,7 +14,7 @@ func newInvoiceLinesCmd() *cobra.Command {
 	}
 
 	invoiceLinesCmd.AddCommand(newInvoiceLinesAddCmd())
-	invoiceLinesCmd.AddCommand(newCollectionListCmd("list", "List invoice lines", "invoice-generator", "invoice_lines"))
+	invoiceLinesCmd.AddCommand(newCollectionListCmd("list", "List invoice lines", "sales-invoices", "invoice_lines"))
 	invoiceLinesCmd.AddCommand(newInvoiceLinesUpdateCmd())
 	invoiceLinesCmd.AddCommand(newInvoiceLinesDeleteCmd())
 
@@ -63,7 +63,7 @@ func newInvoiceLinesAddCmd() *cobra.Command {
 				}
 				payload["sort_order"] = sortOrder
 			}
-			return runModuleAction(cmd, "invoice-generator", "add_invoice_line", payload)
+			return runModuleAction(cmd, "sales-invoices", "add_invoice_line", payload)
 		},
 	}
 }
@@ -117,7 +117,7 @@ func newInvoiceLinesUpdateCmd() *cobra.Command {
 				}
 				payload["sort_order"] = sortOrder
 			}
-			return runModuleAction(cmd, "invoice-generator", "update_invoice_line", payload)
+			return runModuleAction(cmd, "sales-invoices", "update_invoice_line", payload)
 		},
 	}
 }
@@ -144,7 +144,7 @@ func newInvoiceLinesDeleteCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			return runModuleAction(cmd, "invoice-generator", "delete_invoice_line", map[string]any{
+			return runModuleAction(cmd, "sales-invoices", "delete_invoice_line", map[string]any{
 				"invoice_id": invoiceID,
 				"line_id":    lineID,
 			})

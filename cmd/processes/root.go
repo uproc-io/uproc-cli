@@ -28,7 +28,7 @@ func NewCmd() *cobra.Command {
 	processesCmd.AddCommand(newTaxReportingCmd())
 	processesCmd.AddCommand(newEmailAssistantCmd())
 	processesCmd.AddCommand(newOrderTrackCmd())
-	processesCmd.AddCommand(newInvoiceGeneratorCmd())
+	processesCmd.AddCommand(newSalesInvoicesCmd())
 	processesCmd.AddCommand(newCustomerCareCmd())
 	processesCmd.AddCommand(newApprovalManagementCmd())
 	processesCmd.AddCommand(newCandidateEvaluationCmd())

@@ -3,7 +3,7 @@ package processes
 import "testing"
 
 func TestNewInvoiceCmdContainsExpectedVerbs(t *testing.T) {
-	cmd := newInvoiceGeneratorCmd()
+	cmd := newSalesInvoicesCmd()
 	if cmd == nil {
 		t.Fatal("expected invoice command")
 	}

@@ -419,7 +419,7 @@ uproc processes invoice send <invoice_id> [email] [subject] [message]
 uproc processes invoice get-pdf <invoice_id>
 ```
 
-These commands wrap the existing safe `invoice-generator` business verbs for already-created invoices.
+These commands wrap the existing safe `sales-invoices` business verbs for already-created invoices.
 
 ### Invoice lines commands
 
@@ -430,7 +430,7 @@ uproc processes invoice-lines update <invoice_id> <line_id> [concept] [quantity]
 uproc processes invoice-lines delete <invoice_id> <line_id>
 ```
 
-These commands wrap the existing safe `invoice-generator` invoice line verbs.
+These commands wrap the existing safe `sales-invoices` invoice line verbs.
 
 ### Sync commands
 
