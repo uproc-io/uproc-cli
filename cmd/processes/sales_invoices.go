@@ -52,6 +52,13 @@ func newSalesInvoicesVerifactuCmd() *cobra.Command {
 			},
 		},
 		&cobra.Command{
+			Use:   "run",
+			Short: "Run the VeriFactu AEAT workflow now (sends pending registrations)",
+			RunE: func(c *cobra.Command, args []string) error {
+				return runModuleAction(c, "sales-invoices", "run_verifactu", map[string]any{})
+			},
+		},
+		&cobra.Command{
 			Use:   "xml <invoice_id>",
 			Short: "Fetch the AEAT SF v1.1 XML generated for an invoice",
 			Args:  cobra.ExactArgs(1),
