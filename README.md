@@ -497,11 +497,18 @@ This command wraps the existing `financial-reconciliation` workflow verb.
 ### Chat commands
 
 ```bash
-uproc processes chat list [--page 1]
-uproc processes chat ask <domain> <question> [context] [channel] [sender_id] [origin_session_id]
+uproc processes data-chatbot domains
+uproc processes data-chatbot ask <domain> <question> [context] [channel] [sender_id] [origin_session_id]
+uproc processes data-chatbot follow-up <origin_session_id> <question> [channel] [domain] [origin_user_id]
+uproc processes data-chatbot interactive
+uproc processes data-chatbot list [--page 1]
 ```
 
-This command wraps the existing `data-chatbot` workflow verb.
+These wrap the existing `data-chatbot` workflow verbs:
+- `ask` sends a question and returns the response including the `session_id` to resume the conversation.
+- `follow-up` continues an existing conversation (session) with a new question; channel/domain/context default to the session's last request.
+- `domains` lists the available data domains (channels) with their sample questions.
+- `interactive` is a guided flow: pick a domain, select or edit one of the available questions, send it, and keep following up (or switch channel/domain).
 
 All business-verb list commands use the same read flags as the generic module collection reader:
 - `--page`
