@@ -16,6 +16,7 @@ func newDataChatbotCmd() *cobra.Command {
 	chatCmd.AddCommand(newChatFollowUpCmd())
 	chatCmd.AddCommand(newChatDomainsCmd())
 	chatCmd.AddCommand(newChatInteractiveCmd())
+	chatCmd.AddCommand(newChatSessionsCmd())
 	chatCmd.AddCommand(newCollectionListCmd("list", "List chatbot queries", "data-chatbot", "queries"))
 
 	return chatCmd
@@ -121,4 +122,34 @@ func newChatInteractiveCmd() *cobra.Command {
 			return runChatInteractive(cmd)
 		},
 	}
+}
+
+func newChatSessionsCmd() *cobra.Command {
+	var source string
+	var channel string
+	cmd := &cobra.Command{
+		Use:   "sessions",
+		Short: "List the connected user's chatbot sessions (filter by --source web/cli/mcp and/or --channel)",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			client, err := mustClient()
+			if err != nil {
+				return err
+			}
+			path := "/api/v1/external/modules/data-chatbot/sessions"
+			sep := "?"
+			if source != "" {
+				path += sep + "source=" + source
+				sep = "&"
+			}
+			if channel != "" {
+				path += sep + "channel=" + channel
+			}
+			respBody, status, reqErr := client.Do("GET", path, nil)
+			return printResponse(cmd, respBody, status, reqErr)
+		},
+	}
+	cmd.Flags().StringVar(&source, "source", "", "filter by session origin: web, cli, mcp")
+	cmd.Flags().StringVar(&channel, "channel", "", "filter by channel")
+	return cmd
 }
