@@ -1,6 +1,11 @@
 package processes
 
-import "github.com/spf13/cobra"
+import (
+	"encoding/json"
+	"fmt"
+
+	"github.com/spf13/cobra"
+)
 
 func newDataSyncCmd() *cobra.Command {
 	syncCmd := &cobra.Command{
@@ -14,6 +19,7 @@ func newDataSyncCmd() *cobra.Command {
 	syncCmd.AddCommand(newCollectionListCmd("list-records", "List data sync records", "data-sync", "records"))
 	syncCmd.AddCommand(newSyncPreviewCmd())
 	syncCmd.AddCommand(newSyncDryRunCmd())
+	syncCmd.AddCommand(newSyncPushToErpCmd())
 
 	return syncCmd
 }
@@ -81,4 +87,38 @@ func newSyncDryRunCmd() *cobra.Command {
 			return runModuleAction(cmd, "data-sync", "dry_run_workflow", payload)
 		},
 	}
+}
+
+func newSyncPushToErpCmd() *cobra.Command {
+	var credentialID int
+	var resource string
+	var operation string
+	var externalID string
+	var payloadJSON string
+	cmd := &cobra.Command{
+		Use:   "push-to-erp",
+		Short: "Write a record to an ERP provider using a stored ERP credential",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			item := map[string]any{}
+			if err := json.Unmarshal([]byte(payloadJSON), &item); err != nil {
+				return fmt.Errorf("invalid --json payload: %w", err)
+			}
+			payload := map[string]any{
+				"credential_id": credentialID,
+				"resource":      resource,
+				"operation":     operation,
+				"external_id":   externalID,
+				"item":          item,
+			}
+			return runModuleAction(cmd, "data-sync", "push_to_erp", payload)
+		},
+	}
+	cmd.Flags().IntVar(&credentialID, "credential", 0, "ERP credential ID")
+	cmd.Flags().StringVar(&resource, "resource", "", "resource (invoices, contacts, clients, payments...)")
+	cmd.Flags().StringVar(&operation, "operation", "create", "create|update|delete")
+	cmd.Flags().StringVar(&externalID, "external-id", "", "provider record ID (update/delete)")
+	cmd.Flags().StringVar(&payloadJSON, "json", "{}", "provider payload as JSON")
+	_ = cmd.MarkFlagRequired("credential")
+	_ = cmd.MarkFlagRequired("resource")
+	return cmd
 }
