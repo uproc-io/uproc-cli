@@ -42,7 +42,6 @@ func NewCmd() *cobra.Command {
 	processesCmd.AddCommand(newDebtTrackCmd())
 	processesCmd.AddCommand(newLeadIntelligenceCmd())
 	processesCmd.AddCommand(newDataManagementCmd())
-	processesCmd.AddCommand(newErpCmd())
 	processesCmd.AddCommand(newFormGeneratorCmd())
 	processesCmd.AddCommand(newDocumentIngestCmd())
 	processesCmd.AddCommand(newInvoiceIngestCmd())
