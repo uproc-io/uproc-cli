@@ -445,6 +445,16 @@ uproc processes purchase-invoices assign-from-ingest <invoice_id> [payload_json]
 
 These commands wrap the existing `purchase-invoices` business verbs (validate/pay via the module status endpoint, assign via `assign_from_ingest`).
 
+### ERP write commands
+
+```bash
+uproc processes erp create --credential <id> --resource invoices --json '{"number":"H-1","total":100}'
+uproc processes erp update --credential <id> --resource invoices --external-id inv-9 --json '{"total":110}'
+uproc processes erp delete --credential <id> --resource invoices --external-id inv-9
+```
+
+These wrap the `POST /api/v1/external/erp/credentials/{id}/write` endpoint to create/update/delete records on ERP providers (Holded, Factura Directa, Invoice Ninja). The provider is inferred from the credential type.
+
 ### Sync commands
 
 ```bash
