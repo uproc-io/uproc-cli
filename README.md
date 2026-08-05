@@ -1,4 +1,4 @@
-# Bizzmod CLI (Go)
+# Uproc CLI (Go)
 
 Minimal CLI to authenticate and call UProc External API endpoints (`/api/v1/external/*`).
 
