@@ -3,6 +3,7 @@ package processes
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
 
 	"github.com/spf13/cobra"
 )
@@ -12,10 +13,31 @@ func newDataProcessCmd() *cobra.Command {
 		Use:   "data-process",
 		Short: "Business verbs for data-process workflows",
 	}
+	cmd.AddCommand(newDataProcessToolsCmd())
 	cmd.AddCommand(newDataProcessExecuteCmd())
 	cmd.AddCommand(newDataProcessBatchCmd())
 	cmd.AddCommand(newCollectionListCmd("runs", "List data-process runs", "data-process", "runs"))
 	return cmd
+}
+
+func newDataProcessToolsCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "tools [query]",
+		Short: "Search data-process tools (matches key, name, description)",
+		Args:  cobra.MaximumNArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			client, err := mustClient()
+			if err != nil {
+				return err
+			}
+			path := "/api/v1/external/modules/data-process/tools"
+			if len(args) == 1 && args[0] != "" {
+				path += "?q=" + url.QueryEscape(args[0])
+			}
+			body, status, reqErr := client.Do("GET", path, nil)
+			return printResponse(cmd, body, status, reqErr)
+		},
+	}
 }
 
 func newDataProcessExecuteCmd() *cobra.Command {
