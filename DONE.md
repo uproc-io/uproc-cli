@@ -2,6 +2,10 @@
 
 Completed CLI work, grouped by date.
 
+## 2026-08-05
+
+- Added `uproc processes data-process execute|batch|runs` (inline without daily-call limit; batch over a data-management entity) and `uproc me get|update` (connected user profile via `/api/v1/external/profile`). Synced `README.md` and backend CLI/API docs (template + en/es/ca).
+
 ## 2026-06-04
 
 - Added `uproc processes admin usage list` and `uproc processes admin usage summary`, aligned with the external admin usage endpoints and filters.

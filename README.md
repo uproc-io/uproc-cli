@@ -174,6 +174,23 @@ uproc processes module webhook <module_slug> <collection_name> <payload_json>
 
 `module upload` accepts one or more file paths and glob masks. When a mask matches multiple files, CLI uploads each file and prints per-file progress and result.
 
+### Data-process commands
+
+```bash
+uproc processes data-process execute <tool> [params_json]
+uproc processes data-process batch <tool> <source_entity_id> [column_mapping_json] [fixed_values_json] [output_name]
+uproc processes data-process runs
+```
+
+`execute` runs a data-process tool inline (no daily inline-call limit; balance and daily budget apply). `batch` queues a background run over a data-management entity.
+
+### Profile (connected user)
+
+```bash
+uproc me get
+uproc me update first_name=Jane language=es default_app=data-process
+```
+
 ### Forms commands
 
 ```bash

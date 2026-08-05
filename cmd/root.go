@@ -38,6 +38,7 @@ func NewRootCmd(version string) *cobra.Command {
 	rootCmd.AddCommand(newDataCmd())
 	rootCmd.AddCommand(newConfigCmd())
 	rootCmd.AddCommand(newProfileCmd())
+	rootCmd.AddCommand(newMeCmd())
 	rootCmd.AddCommand(&cobra.Command{
 		Use:   "version",
 		Short: "Show CLI version",
