@@ -13,27 +13,47 @@ func newDataProcessCmd() *cobra.Command {
 		Use:   "data-process",
 		Short: "Business verbs for data-process workflows",
 	}
-	cmd.AddCommand(newDataProcessToolsCmd())
+	cmd.AddCommand(newDataProcessSearchCmd())
+	cmd.AddCommand(newDataProcessToolCmd())
 	cmd.AddCommand(newDataProcessExecuteCmd())
 	cmd.AddCommand(newDataProcessBatchCmd())
 	cmd.AddCommand(newCollectionListCmd("runs", "List data-process runs", "data-process", "runs"))
 	return cmd
 }
 
-func newDataProcessToolsCmd() *cobra.Command {
+func runDataProcessToolsSearch(cmd *cobra.Command, args []string) error {
+	client, err := mustClient()
+	if err != nil {
+		return err
+	}
+	path := "/api/v1/external/modules/data-process/tools"
+	if len(args) == 1 && args[0] != "" {
+		path += "?q=" + url.QueryEscape(args[0])
+	}
+	body, status, reqErr := client.Do("GET", path, nil)
+	return printResponse(cmd, body, status, reqErr)
+}
+
+func newDataProcessSearchCmd() *cobra.Command {
 	return &cobra.Command{
-		Use:   "tools [query]",
+		Use:   "search [query]",
 		Short: "Search data-process tools (matches key, name, description)",
 		Args:  cobra.MaximumNArgs(1),
+		RunE:  runDataProcessToolsSearch,
+	}
+}
+
+func newDataProcessToolCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "tool <key>",
+		Short: "Show full details of a data-process tool (params, accepted values, format, cost)",
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			client, err := mustClient()
 			if err != nil {
 				return err
 			}
-			path := "/api/v1/external/modules/data-process/tools"
-			if len(args) == 1 && args[0] != "" {
-				path += "?q=" + url.QueryEscape(args[0])
-			}
+			path := "/api/v1/external/modules/data-process/tools/" + url.PathEscape(args[0])
 			body, status, reqErr := client.Do("GET", path, nil)
 			return printResponse(cmd, body, status, reqErr)
 		},

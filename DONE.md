@@ -4,7 +4,7 @@ Completed CLI work, grouped by date.
 
 ## 2026-08-05
 
-- Renamed the primary command `uproc processes` → `uproc applications` (kept `uproc processes` as a hidden deprecated alias via `NewProcessesAliasCmd`). Added `uproc applications data-process tools [query]` to search the data-process tool catalog. Synced `README.md` and backend CLI/API/MCP docs (template + en/es/ca).
+- Renamed the primary command `uproc processes` → `uproc applications` (kept `uproc processes` as a hidden deprecated alias via `NewProcessesAliasCmd`). Added `uproc applications data-process search [query]` (discover tools) and `uproc applications data-process tool <key>` (full tool spec: params/accepted/format/cost). Synced `README.md` and backend CLI/API/MCP docs (template + en/es/ca).
 
 - Added `uproc processes data-process execute|batch|runs` (inline without daily-call limit; batch over a data-management entity) and `uproc me get|update` (connected user profile via `/api/v1/external/profile`). Synced `README.md` and backend CLI/API docs (template + en/es/ca).
 

@@ -180,12 +180,14 @@ uproc applications module webhook <module_slug> <collection_name> <payload_json>
 ### Data-process commands
 
 ```bash
+uproc applications data-process search [query]
+uproc applications data-process tool <key>
 uproc applications data-process execute <tool> [params_json]
 uproc applications data-process batch <tool> <source_entity_id> [column_mapping_json] [fixed_values_json] [output_name]
 uproc applications data-process runs
 ```
 
-`execute` runs a data-process tool inline (no daily inline-call limit; balance and daily budget apply). `batch` queues a background run over a data-management entity.
+`search` finds tools by key/name/description; `tool <key>` shows the full spec (params, accepted values, format, cost) so you can build an `execute` call. `execute` runs a tool inline (no daily inline-call limit; balance and daily budget apply). `batch` queues a background run over a data-management entity.
 
 ### Profile (connected user)
 
