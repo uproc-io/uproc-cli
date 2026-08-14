@@ -2,6 +2,10 @@
 
 Completed CLI work, grouped by date.
 
+## 2026-08-14
+
+- **campaign-automation: `sync-audience` y `launch-platforms`** — Nuevos subcomandos `uproc applications campaign sync-audience <campaign_id> <audience_id>` y `launch-platforms <campaign_id>` (envuelven `POST /api/v1/external/modules/campaign-automation/actions/sync_audience` y `launch_platforms`, para sincronizar audiencias como suscriptores y lanzar campañas en plataformas externas como Sendy). README actualizado.
+
 ## 2026-08-05
 
 - `README.md` título `# Bizzmod CLI (Go)` → `# Uproc CLI (Go)` (rename de marca; el artefacto distribuido ya era `uproc`).

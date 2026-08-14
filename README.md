@@ -278,6 +278,8 @@ uproc applications campaign preview-audience <campaign_id> [limit]
 uproc applications campaign add-audience <campaign_id> [mode]
 uproc applications campaign pause <campaign_id>
 uproc applications campaign activate <campaign_id>
+uproc applications campaign sync-audience <campaign_id> <audience_id>
+uproc applications campaign launch-platforms <campaign_id>
 ```
 
 These commands wrap the existing `campaign-automation` business verbs.

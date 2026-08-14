@@ -14,6 +14,8 @@ func newCampaignAutomationCmd() *cobra.Command {
 	campaignCmd.AddCommand(newCampaignAddAudienceCmd())
 	campaignCmd.AddCommand(newCampaignPauseCmd())
 	campaignCmd.AddCommand(newCampaignActivateCmd())
+	campaignCmd.AddCommand(newCampaignSyncAudienceCmd())
+	campaignCmd.AddCommand(newCampaignLaunchPlatformsCmd())
 
 	return campaignCmd
 }
@@ -86,6 +88,45 @@ func newCampaignActivateCmd() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return runSingleIDAction(cmd, "campaign-automation", "activate", "campaign_id", args[0])
+		},
+	}
+}
+
+func newCampaignSyncAudienceCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "sync-audience <campaign_id> <audience_id>",
+		Short: "Sync a campaign audience to configured platforms (e.g. Sendy)",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			campaignID, err := parsePositiveIntArg("campaign_id", args[0])
+			if err != nil {
+				return err
+			}
+			audienceID, err := parsePositiveIntArg("audience_id", args[1])
+			if err != nil {
+				return err
+			}
+			return runModuleAction(cmd, "campaign-automation", "sync_audience", map[string]any{
+				"campaign_id": campaignID,
+				"audience_id": audienceID,
+			})
+		},
+	}
+}
+
+func newCampaignLaunchPlatformsCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "launch-platforms <campaign_id>",
+		Short: "Create and launch a campaign on its configured platforms (e.g. Sendy)",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			campaignID, err := parsePositiveIntArg("campaign_id", args[0])
+			if err != nil {
+				return err
+			}
+			return runModuleAction(cmd, "campaign-automation", "launch_platforms", map[string]any{
+				"campaign_id": campaignID,
+			})
 		},
 	}
 }
