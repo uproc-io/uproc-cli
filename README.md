@@ -117,6 +117,27 @@ brew upgrade uproc
 
 ## Commands
 
+### Self-update
+
+```bash
+uproc self-update            # update to the latest release
+uproc self-update --check    # only report whether an update exists
+uproc self-update --version v0.1.5   # update to a specific version
+uproc self-update --pre      # allow pre-release versions
+```
+
+The CLI checks the `uproc-io/uproc.cli` GitHub release for the current platform,
+verifies the artifact against `checksums.txt` and atomically replaces the running
+binary. When installed via Homebrew or Scoop it prints the package-manager update
+command instead.
+
+Each invocation also checks (silently, at most once every 24h) whether a newer
+version exists and prints a one-line notice to stderr. Disable it with:
+
+```bash
+export UPROC_NO_UPDATE_CHECK=1
+```
+
 ### Auth
 
 ```bash

@@ -3,6 +3,7 @@ package cmd
 import (
 	"bizzmod-cli/cmd/processes"
 	"bizzmod-cli/internal/config"
+	"bizzmod-cli/internal/update"
 	"fmt"
 	"github.com/spf13/cobra"
 )
@@ -16,6 +17,9 @@ func NewRootCmd(version string) *cobra.Command {
 		Version: version,
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			config.SetConfigPath(configPath)
+			if cmd.Name() != "self-update" {
+				update.NotifyIfUpdateAvailable(version)
+			}
 			return nil
 		},
 	}
@@ -40,6 +44,7 @@ func NewRootCmd(version string) *cobra.Command {
 	rootCmd.AddCommand(newConfigCmd())
 	rootCmd.AddCommand(newProfileCmd())
 	rootCmd.AddCommand(newMeCmd())
+	rootCmd.AddCommand(newSelfUpdateCmd(version))
 	rootCmd.AddCommand(&cobra.Command{
 		Use:   "version",
 		Short: "Show CLI version",

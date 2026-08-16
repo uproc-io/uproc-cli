@@ -2,6 +2,10 @@
 
 Completed CLI work, grouped by date.
 
+## 2026-08-16
+
+- **Auto-update del CLI (`uproc self-update` + aviso proactivo)** — Nuevo comando `uproc self-update` (flags `--check`, `--version vX.Y.Z`, `--pre`) que consulta el release de `uproc-io/uproc.cli` para la plataforma actual, verifica el SHA256 contra `checksums.txt` y reemplaza el binario en ejecución de forma atómica. Nuevo paquete `internal/update/` (`update.go`, `checksum.go`, `install.go`, `cache.go`): selección de asset `uproc.cli_{version}_{os}_{arch}.tar.gz`/`.zip` según `GOOS`/`GOARCH`, extracción del binario, detección del método de instalación (Homebrew/Scoop → imprime `brew upgrade uproc` / `scoop update uproc` sin tocar el binario; standalone → swap). Aviso proactivo en cada invocación (cache 24h en `os.UserCacheDir()/uproc/update-check.json`, silencioso sin red, opt-out `UPROC_NO_UPDATE_CHECK=1`, skip en builds `dev`). Versión normalizada para semver con `golang.org/x/mod` (v0.19.0, compatible go 1.22). `cmd/root.go` registra el comando y el hook. Tests `internal/update/update_test.go` (normalización, checksums, selección de asset, detección de instalación). Verificado end-to-end contra GitHub (v0.1.0 → v0.1.6). `gofmt`/`go vet`/`go test` ✅. README y AGENTS actualizados.
+
 ## 2026-08-14
 
 - **campaign-automation: `sync-audience` y `launch-platforms`** — Nuevos subcomandos `uproc applications campaign sync-audience <campaign_id> <audience_id>` y `launch-platforms <campaign_id>` (envuelven `POST /api/v1/external/modules/campaign-automation/actions/sync_audience` y `launch_platforms`, para sincronizar audiencias como suscriptores y lanzar campañas en plataformas externas como Sendy). README actualizado.
