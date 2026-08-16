@@ -106,13 +106,25 @@ Expected:
 ### Install or update CLI with Homebrew
 
 ```bash
-# First-time setup (tap + install)
+# First-time setup (tap + trust + install)
 brew tap uproc-io/uproc
+brew trust uproc-io/uproc   # required on Homebrew 5.5+
 brew install uproc
 
 # Update to latest available version
 brew update
 brew upgrade uproc
+```
+
+### Install or update CLI with Scoop (Windows)
+
+```powershell
+# First-time setup (bucket add + install)
+scoop bucket add uproc https://github.com/uproc-io/scoop-bucket.git
+scoop install uproc
+
+# Update to latest available version
+scoop update uproc
 ```
 
 ## Commands
