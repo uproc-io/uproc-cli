@@ -12,10 +12,8 @@ import (
 )
 
 type Config struct {
-	APIURL         string `json:"api_url" yaml:"api_url"`
-	CustomerAPIKey string `json:"customer_api_key" yaml:"customer_api_key"`
-	CustomerDomain string `json:"customer_domain" yaml:"customer_domain"`
-	UserEmail      string `json:"user_email" yaml:"user_email"`
+	APIURL     string `json:"api_url" yaml:"api_url"`
+	UserAPIKey string `json:"user_api_key" yaml:"user_api_key"`
 }
 
 type configFile struct {
@@ -102,7 +100,7 @@ func ensureMigrated(writePath string) error {
 
 	legacy = normalize(legacy)
 
-	if legacy.APIURL == "" && legacy.CustomerDomain == "" && legacy.CustomerAPIKey == "" && legacy.UserEmail == "" {
+	if legacy.APIURL == "" && legacy.UserAPIKey == "" {
 		return nil
 	}
 
@@ -181,9 +179,7 @@ func effectiveProfileName(file configFile) string {
 
 func normalize(cfg Config) Config {
 	cfg.APIURL = strings.TrimRight(strings.TrimSpace(cfg.APIURL), "/")
-	cfg.CustomerAPIKey = strings.TrimSpace(cfg.CustomerAPIKey)
-	cfg.CustomerDomain = strings.TrimSpace(cfg.CustomerDomain)
-	cfg.UserEmail = strings.TrimSpace(cfg.UserEmail)
+	cfg.UserAPIKey = strings.TrimSpace(cfg.UserAPIKey)
 	return cfg
 }
 
@@ -292,8 +288,7 @@ func SaveProfile(name string, cfg Config, setActive bool) error {
 		return fmt.Errorf("profile name is required")
 	}
 
-	if strings.TrimSpace(cfg.APIURL) == "" || strings.TrimSpace(cfg.CustomerAPIKey) == "" ||
-		strings.TrimSpace(cfg.CustomerDomain) == "" || strings.TrimSpace(cfg.UserEmail) == "" {
+	if strings.TrimSpace(cfg.APIURL) == "" || strings.TrimSpace(cfg.UserAPIKey) == "" {
 		return fmt.Errorf("all login fields are required")
 	}
 
@@ -352,19 +347,8 @@ func Validate(cfg Config) error {
 	if strings.TrimSpace(cfg.APIURL) == "" {
 		return fmt.Errorf("missing UPROC_PROCESSES_API_URL or login config")
 	}
-	if strings.TrimSpace(cfg.CustomerAPIKey) == "" {
-		return fmt.Errorf("missing CUSTOMER_API_KEY or login config")
-	}
-	if strings.TrimSpace(cfg.CustomerDomain) == "" {
-		return fmt.Errorf("missing CUSTOMER_DOMAIN or login config")
-	}
-
-	if strings.Contains(cfg.CustomerDomain, "://") || strings.Contains(cfg.CustomerDomain, "/") {
-		return fmt.Errorf("CUSTOMER_DOMAIN must be the customer domain value, not a URL")
-	}
-
-	if strings.TrimSpace(cfg.UserEmail) == "" {
-		return fmt.Errorf("missing CUSTOMER_USER_EMAIL or login config")
+	if strings.TrimSpace(cfg.UserAPIKey) == "" {
+		return fmt.Errorf("missing USER_API_KEY or login config")
 	}
 	return nil
 }

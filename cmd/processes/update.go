@@ -39,8 +39,8 @@ func newUpdateCmd() *cobra.Command {
 
 func newUpdateCheckCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "check <customer_api_key>",
-		Short: "Validate customer server update readiness (dry-run only)",
+		Use:   "check <user_api_key>",
+		Short: "Validate user server update readiness (dry-run only)",
 		Long:  "Runs read-only checks against install plan and local server state. No deployment changes are executed.",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -49,7 +49,7 @@ func newUpdateCheckCmd() *cobra.Command {
 				return err
 			}
 
-			cfg.CustomerAPIKey = args[0]
+			cfg.UserAPIKey = args[0]
 			if err := config.Validate(cfg); err != nil {
 				return err
 			}

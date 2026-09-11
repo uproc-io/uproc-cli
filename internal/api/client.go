@@ -37,9 +37,7 @@ func (c *Client) Do(method, path string, body []byte) ([]byte, int, error) {
 		return nil, 0, err
 	}
 
-	req.Header.Set("x-api-key", c.config.CustomerAPIKey)
-	req.Header.Set("x-customer-domain", c.config.CustomerDomain)
-	req.Header.Set("x-user-email", c.config.UserEmail)
+	req.Header.Set("Authorization", "Bearer "+c.config.UserAPIKey)
 	req.Header.Set("x-client-app", "uproc-cli")
 	req.Header.Set("User-Agent", cliUserAgent)
 	if len(body) > 0 {

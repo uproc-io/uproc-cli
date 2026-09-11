@@ -163,7 +163,7 @@ Stores credentials in `./config.yml` under the selected profile.
 - existing values from the selected profile
 - interactive prompt step-by-step for all values (shows current value as default)
 
-`CUSTOMER_DOMAIN` must be the customer domain identifier (not a URL).
+`USER_API_KEY` is the personal API key generated for the connected user. The CLI sends it as a Bearer token and does not send customer keys, domains, or user emails.
 
 Example:
 
@@ -652,7 +652,7 @@ uproc> exit
 ### Install plan (dry-run)
 
 ```bash
-uproc applications install <CUSTOMER_API_KEY> --dry-run
+uproc applications install <USER_API_KEY> --dry-run
 ```
 
 This command fetches `/api/v1/external/install` and shows the full installation plan (release versions, required services, and ordered steps) without executing changes on the server.
@@ -660,16 +660,13 @@ This command fetches `/api/v1/external/install` and shows the full installation 
 ### Update check (dry-run only)
 
 ```bash
-uproc applications update check <CUSTOMER_API_KEY>
+uproc applications update check <USER_API_KEY>
 ```
 
 This command validates update readiness using `/api/v1/external/install?dry_run=true` plus local read-only checks (docker, dokploy, required services, required env vars, and health endpoints). It never executes deployment/apply actions.
 
 ## Notes
 
-- All calls send headers required by backend external auth:
-  - `x-api-key`
-  - `x-customer-domain`
-  - `x-user-email`
+- All authenticated external calls send `Authorization: Bearer <USER_API_KEY>`.
 - `request` allows calling any current/future external endpoint without waiting for a dedicated subcommand.
 - CLI output is always displayed in list/table format (never JSON output).

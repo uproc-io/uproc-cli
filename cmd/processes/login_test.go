@@ -11,10 +11,8 @@ import (
 
 func TestHasConfigChanged(t *testing.T) {
 	base := config.Config{
-		APIURL:         "http://localhost:5000",
-		CustomerAPIKey: "k",
-		CustomerDomain: "demo",
-		UserEmail:      "user@demo.test",
+		APIURL:     "http://localhost:5000",
+		UserAPIKey: "k",
 	}
 
 	if hasConfigChanged(base, base) {
@@ -22,24 +20,22 @@ func TestHasConfigChanged(t *testing.T) {
 	}
 
 	changed := base
-	changed.CustomerDomain = "other"
+	changed.UserAPIKey = "other"
 	if !hasConfigChanged(base, changed) {
 		t.Fatalf("expected changed config")
 	}
 }
 
 func TestPromptReviewFieldsKeepsDefaultsOnEnter(t *testing.T) {
-	in := bytes.NewBufferString("\n\n\n\n")
+	in := bytes.NewBufferString("\n\n")
 	out := bytes.NewBuffer(nil)
 	cmd := newLoginCmd()
 	cmd.SetIn(in)
 	cmd.SetOut(out)
 
 	initial := config.Config{
-		APIURL:         "http://localhost:5000",
-		CustomerDomain: "demo",
-		CustomerAPIKey: "abc",
-		UserEmail:      "admin@example.com",
+		APIURL:     "http://localhost:5000",
+		UserAPIKey: "abc",
 	}
 
 	got, err := promptReviewFields(initial, cmd)
@@ -52,18 +48,16 @@ func TestPromptReviewFieldsKeepsDefaultsOnEnter(t *testing.T) {
 	}
 }
 
-func TestPromptReviewFieldsRejectsDomainURL(t *testing.T) {
-	in := bytes.NewBufferString("\nhttps://bad.domain/path\ncorrect-domain\n\n\n")
+func TestPromptReviewFieldsUpdatesUserAPIKey(t *testing.T) {
+	in := bytes.NewBufferString("\nnew-key\n")
 	out := bytes.NewBuffer(nil)
 	cmd := newLoginCmd()
 	cmd.SetIn(in)
 	cmd.SetOut(out)
 
 	initial := config.Config{
-		APIURL:         "http://localhost:5000",
-		CustomerDomain: "demo",
-		CustomerAPIKey: "abc",
-		UserEmail:      "admin@example.com",
+		APIURL:     "http://localhost:5000",
+		UserAPIKey: "abc",
 	}
 
 	got, err := promptReviewFields(initial, cmd)
@@ -71,17 +65,15 @@ func TestPromptReviewFieldsRejectsDomainURL(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	if got.CustomerDomain != "correct-domain" {
-		t.Fatalf("expected corrected domain, got %s", got.CustomerDomain)
+	if got.UserAPIKey != "new-key" {
+		t.Fatalf("expected updated user API key")
 	}
 }
 
 func TestValidateExternalCredentialsFailsOnBadResponse(t *testing.T) {
 	cfg := config.Config{
-		APIURL:         "http://127.0.0.1:1",
-		CustomerAPIKey: "k",
-		CustomerDomain: "demo",
-		UserEmail:      "admin@example.com",
+		APIURL:     "http://127.0.0.1:1",
+		UserAPIKey: "k",
 	}
 
 	err := validateExternalCredentials(cfg)
@@ -95,10 +87,8 @@ func TestValidateExternalCredentialsWithStubServer(t *testing.T) {
 	defer server.Close()
 
 	cfg := config.Config{
-		APIURL:         server.URL,
-		CustomerAPIKey: "k",
-		CustomerDomain: "demo",
-		UserEmail:      "admin@example.com",
+		APIURL:     server.URL,
+		UserAPIKey: "k",
 	}
 
 	if err := validateExternalCredentials(cfg); err != nil {

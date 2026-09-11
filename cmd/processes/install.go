@@ -11,7 +11,7 @@ func newInstallCmd() *cobra.Command {
 	var dryRun bool
 
 	cmd := &cobra.Command{
-		Use:   "install <customer_api_key>",
+		Use:   "install <user_api_key>",
 		Short: "Show installation plan for a customer",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -20,7 +20,7 @@ func newInstallCmd() *cobra.Command {
 				return err
 			}
 
-			cfg.CustomerAPIKey = args[0]
+			cfg.UserAPIKey = args[0]
 			if err := config.Validate(cfg); err != nil {
 				return err
 			}

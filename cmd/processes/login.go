@@ -17,7 +17,7 @@ func newLoginCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "login",
 		Short: "Configure credentials with step-by-step profile wizard",
-		Args:  cobra.RangeArgs(0, 4),
+		Args:  cobra.RangeArgs(0, 2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if strings.TrimSpace(profileName) == "" {
 				active, err := config.GetActiveProfileName()
@@ -35,14 +35,12 @@ func newLoginCmd() *cobra.Command {
 			cfg := currentCfg
 
 			if len(args) > 0 {
-				if len(args) != 4 {
-					return fmt.Errorf("when using arguments, provide all 4 values")
+				if len(args) != 2 {
+					return fmt.Errorf("when using arguments, provide API URL and user API key")
 				}
 				cfg = config.Config{
-					APIURL:         args[0],
-					CustomerAPIKey: args[1],
-					CustomerDomain: args[2],
-					UserEmail:      args[3],
+					APIURL:     args[0],
+					UserAPIKey: args[1],
 				}
 			} else {
 				interactiveCfg, err := promptReviewFields(cfg, cmd)
@@ -91,30 +89,11 @@ func promptReviewFields(cfg config.Config, cmd *cobra.Command) (config.Config, e
 	}
 	cfg.APIURL = apiURL
 
-	for {
-		domain, promptErr := promptWithDefault(reader, cmd, "CUSTOMER_DOMAIN", cfg.CustomerDomain)
-		if promptErr != nil {
-			return cfg, promptErr
-		}
-		if strings.Contains(domain, "://") || strings.Contains(domain, "/") {
-			fmt.Fprintln(cmd.OutOrStdout(), "CUSTOMER_DOMAIN must be the customer domain value, not a URL")
-			continue
-		}
-		cfg.CustomerDomain = domain
-		break
-	}
-
-	apiKey, err := promptWithDefault(reader, cmd, "CUSTOMER_API_KEY", cfg.CustomerAPIKey)
+	apiKey, err := promptWithDefault(reader, cmd, "USER_API_KEY", cfg.UserAPIKey)
 	if err != nil {
 		return cfg, err
 	}
-	cfg.CustomerAPIKey = apiKey
-
-	userEmail, err := promptWithDefault(reader, cmd, "CUSTOMER_USER_EMAIL", cfg.UserEmail)
-	if err != nil {
-		return cfg, err
-	}
-	cfg.UserEmail = userEmail
+	cfg.UserAPIKey = apiKey
 
 	return cfg, nil
 }
@@ -145,9 +124,7 @@ func promptWithDefault(reader *bufio.Reader, cmd *cobra.Command, field string, c
 
 func hasConfigChanged(before config.Config, after config.Config) bool {
 	return strings.TrimRight(strings.TrimSpace(before.APIURL), "/") != strings.TrimRight(strings.TrimSpace(after.APIURL), "/") ||
-		strings.TrimSpace(before.CustomerDomain) != strings.TrimSpace(after.CustomerDomain) ||
-		strings.TrimSpace(before.CustomerAPIKey) != strings.TrimSpace(after.CustomerAPIKey) ||
-		strings.TrimSpace(before.UserEmail) != strings.TrimSpace(after.UserEmail)
+		strings.TrimSpace(before.UserAPIKey) != strings.TrimSpace(after.UserAPIKey)
 }
 
 func validateExternalCredentials(cfg config.Config) error {
