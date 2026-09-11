@@ -13,12 +13,6 @@ Items needing human review: technical debt, workarounds, pending decisions, scop
 
 ## Entries
 
-- Date: `2026-09-11` · Area: `release distribution`
-  - Item: GoReleaser published the Homebrew formula to the tap root (`uproc.rb`) because `brews` had no `directory`, while Homebrew reads `Formula/uproc.rb`; the tap kept stale manual content. Scoop was unaffected.
-  - Reason: The tap was originally seeded manually; GoReleaser's default `directory` is empty. Fixed by setting `directory: Formula` and removing the stray root formula. The workflow now receives `UPROC_DISTRIBUTION_TOKEN` (Contents: read/write on `homebrew-uproc` and `scoop-bucket`).
-  - Impact: The next CLI release verifies that GoReleaser updates `Formula/uproc.rb` and `uproc.json` automatically without leaving the workflow red.
-  - Status: `planned`
-
 - Date: `2026-08-16` · Area: `self-update` (Windows)
   - Item: En Windows no se puede reemplazar un ejecutable en uso; `replaceExecutable` deja el binario nuevo como `<uproc>.exe.new` e imprime instrucciones para el swap manual.
   - Reason: Reemplazo atómico del exe en ejecución requiere un shim/rename póstumo; se decidió no añadir esa complejidad en v1 (uso principal macOS/Linux).
