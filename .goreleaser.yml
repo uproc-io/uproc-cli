@@ -53,7 +53,9 @@ brews:
     repository:
       owner: uproc-io
       name: homebrew-uproc
+      branch: main
       token: "{{ .Env.UPROC_DISTRIBUTION_TOKEN }}"
+    directory: Formula
     homepage: https://github.com/uproc-io/uproc-cli
     description: Uproc CLI
     test: |

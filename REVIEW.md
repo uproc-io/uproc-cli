@@ -14,9 +14,9 @@ Items needing human review: technical debt, workarounds, pending decisions, scop
 ## Entries
 
 - Date: `2026-09-11` · Area: `release distribution`
-  - Item: GoReleaser publishes GitHub Release assets successfully but cannot update the Homebrew and Scoop repositories from GitHub Actions.
-  - Reason: The default workflow `GITHUB_TOKEN` has no cross-repository write permission; Homebrew and Scoop were updated manually over SSH for v0.2.1. The workflow now receives `UPROC_DISTRIBUTION_TOKEN` for both publishers and needs validation on the next release.
-  - Impact: The next CLI release will verify that Homebrew and Scoop update automatically without leaving the workflow red.
+  - Item: GoReleaser published the Homebrew formula to the tap root (`uproc.rb`) because `brews` had no `directory`, while Homebrew reads `Formula/uproc.rb`; the tap kept stale manual content. Scoop was unaffected.
+  - Reason: The tap was originally seeded manually; GoReleaser's default `directory` is empty. Fixed by setting `directory: Formula` and removing the stray root formula. The workflow now receives `UPROC_DISTRIBUTION_TOKEN` (Contents: read/write on `homebrew-uproc` and `scoop-bucket`).
+  - Impact: The next CLI release verifies that GoReleaser updates `Formula/uproc.rb` and `uproc.json` automatically without leaving the workflow red.
   - Status: `planned`
 
 - Date: `2026-08-16` · Area: `self-update` (Windows)
