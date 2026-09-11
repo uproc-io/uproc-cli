@@ -250,7 +250,7 @@ uproc applications data-management import-transfer --file hospicare.dm.zip
 uproc applications data-management import-transfer --file hospicare.dm.zip --confirm
 ```
 
-The export contains only Data Management tables, columns, rows, and relations. Import without `--confirm` is a preview; confirming replaces all Data Management data for the authenticated customer. It does not transfer users, credentials, customer settings, or file attachments.
+The export contains only Data Management tables, columns, rows, and relations. It also writes an export report to `<output>.report.json` (and embeds `export_report.json` inside the ZIP) that summarizes relation integrity per entity/column, including unresolved references (`missing`/`non_numeric`) and ignored non-positive references, without exposing row values. Import without `--confirm` is a preview; confirming replaces all Data Management data for the authenticated customer. It does not transfer users, credentials, customer settings, or file attachments.
 
 ### Profile (connected user)
 

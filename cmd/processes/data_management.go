@@ -54,7 +54,8 @@ func newDMExportTransferCmd() *cobra.Command {
 			var result struct {
 				Success bool `json:"success"`
 				Data    struct {
-					ZipBase64 string `json:"zip_base64"`
+					ZipBase64 string          `json:"zip_base64"`
+					Report    json.RawMessage `json:"report"`
 				} `json:"data"`
 			}
 			if err := json.Unmarshal(response, &result); err != nil || !result.Success || result.Data.ZipBase64 == "" {
@@ -68,6 +69,31 @@ func newDMExportTransferCmd() *cobra.Command {
 				return fmt.Errorf("cannot write %s: %w", output, err)
 			}
 			fmt.Fprintf(cmd.OutOrStdout(), "Data Management transfer saved to %s (%d bytes)\n", output, len(archive))
+
+			if len(result.Data.Report) == 0 {
+				return nil
+			}
+			reportPath := output + ".report.json"
+			if err := os.WriteFile(reportPath, result.Data.Report, 0600); err != nil {
+				return fmt.Errorf("cannot write %s: %w", reportPath, err)
+			}
+			var report struct {
+				Relations struct {
+					References         int `json:"references"`
+					Resolved           int `json:"resolved"`
+					Unresolved         int `json:"unresolved"`
+					IgnoredNonPositive int `json:"ignored_non_positive"`
+				} `json:"relations"`
+			}
+			_ = json.Unmarshal(result.Data.Report, &report)
+			fmt.Fprintf(
+				cmd.OutOrStdout(),
+				"Relations: %d resolved, %d unresolved, %d ignored (non-positive)\n",
+				report.Relations.Resolved,
+				report.Relations.Unresolved,
+				report.Relations.IgnoredNonPositive,
+			)
+			fmt.Fprintf(cmd.OutOrStdout(), "Export report saved to %s\n", reportPath)
 			return nil
 		},
 	}

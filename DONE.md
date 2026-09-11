@@ -4,6 +4,8 @@ Completed CLI work, grouped by date.
 
 ## 2026-09-11
 
+- **DM export report sidecar** — `data-management export-transfer` now parses the export report returned by the API, writes it next to the archive as `<output>.report.json` (mode 0600), and prints a relation summary (`resolved`, `unresolved`, ignored non-positive). The report exposes relation integrity per entity/column and never row values. README and backend CLI docs synchronized. Validation: `go vet ./...`, `go test ./...`, build.
+
 - **CLI API externa directa** — Migrados los seis comandos restantes que usaban `/api/v1/external/mcp/call`: export/import completo de customer, template/bulk-create/reset-password de usuarios y `data column update`. El CLI ya no contiene llamadas MCP; mantiene la misma autorización y confirmaciones al usar rutas externas directas. Validación: `go vet ./...`, `go test ./...` y build.
 
 - **Portable Data Management transfer** — Added `uproc applications data-management export-transfer --output <file>` and `import-transfer --file <file> [--confirm]`. The commands call direct external API endpoints, not MCP: `GET /api/v1/external/data-management/transfer` and `POST /api/v1/external/data-management/transfer/import`. Export writes a mode-0600 portable ZIP; import previews by default and confirms a full replacement limited to the authenticated customer's Data Management schema and rows. README and backend CLI/API/MCP docs synchronized. Validation: `go test ./...`.
