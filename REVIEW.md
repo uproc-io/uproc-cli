@@ -15,9 +15,9 @@ Items needing human review: technical debt, workarounds, pending decisions, scop
 
 - Date: `2026-09-11` · Area: `release distribution`
   - Item: GoReleaser publishes GitHub Release assets successfully but cannot update the Homebrew and Scoop repositories from GitHub Actions.
-  - Reason: The default workflow `GITHUB_TOKEN` has no cross-repository write permission; Homebrew and Scoop were updated manually over SSH for v0.2.1.
-  - Impact: Release workflow remains red after successful artifact publication unless distribution uses a dedicated cross-repository token or a separate authenticated workflow.
-  - Status: `pending`
+  - Reason: The default workflow `GITHUB_TOKEN` has no cross-repository write permission; Homebrew and Scoop were updated manually over SSH for v0.2.1. The workflow now receives `UPROC_DISTRIBUTION_TOKEN` for both publishers and needs validation on the next release.
+  - Impact: The next CLI release will verify that Homebrew and Scoop update automatically without leaving the workflow red.
+  - Status: `planned`
 
 - Date: `2026-08-16` · Area: `self-update` (Windows)
   - Item: En Windows no se puede reemplazar un ejecutable en uso; `replaceExecutable` deja el binario nuevo como `<uproc>.exe.new` e imprime instrucciones para el swap manual.

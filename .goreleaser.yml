@@ -53,6 +53,7 @@ brews:
     repository:
       owner: uproc-io
       name: homebrew-uproc
+      token: "{{ .Env.UPROC_DISTRIBUTION_TOKEN }}"
     homepage: https://github.com/uproc-io/uproc-cli
     description: Uproc CLI
     test: |
@@ -66,7 +67,7 @@ scoops:
       owner: uproc-io
       name: scoop-bucket
       branch: main
-      token: "{{ .Env.GITHUB_TOKEN }}"
+      token: "{{ .Env.UPROC_DISTRIBUTION_TOKEN }}"
     commit_author:
       name: github-actions[bot]
       email: 41898282+github-actions[bot]@users.noreply.github.com
