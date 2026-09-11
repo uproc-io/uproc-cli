@@ -83,13 +83,13 @@ func newLoginCmd() *cobra.Command {
 func promptReviewFields(cfg config.Config, cmd *cobra.Command) (config.Config, error) {
 	reader := bufio.NewReader(cmd.InOrStdin())
 
-	apiURL, err := promptWithDefault(reader, cmd, "UPROC_PROCESSES_API_URL", cfg.APIURL)
+	apiURL, err := promptWithDefault(reader, cmd, "API URL", cfg.APIURL)
 	if err != nil {
 		return cfg, err
 	}
 	cfg.APIURL = apiURL
 
-	apiKey, err := promptWithDefault(reader, cmd, "USER_API_KEY", cfg.UserAPIKey)
+	apiKey, err := promptWithDefault(reader, cmd, "User API key", cfg.UserAPIKey)
 	if err != nil {
 		return cfg, err
 	}

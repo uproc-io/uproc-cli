@@ -158,6 +158,26 @@ uproc applications login --profile mcolomer@local --use
 
 Stores credentials in `./config.yml` under the selected profile.
 
+Each profile contains only the target `api_url` and a personal `user_api_key`:
+
+```yaml
+active_profile: hospicare
+profiles:
+  hospicare:
+    api_url: https://api.example.com
+    user_api_key: <personal-user-api-key>
+```
+
+Use `uproc profile list` to inspect configured URLs and `uproc profile show` to inspect the active profile. These commands never print the API key.
+
+Create and activate a profile interactively with:
+
+```bash
+uproc profile add hospicare
+```
+
+It prompts for the API URL and user API key, saves them with restrictive file permissions, and sets the new profile as active.
+
 `login` reads credentials in this order:
 - command arguments (optional, still supported)
 - existing values from the selected profile
