@@ -44,7 +44,7 @@ changelog:
 release:
   github:
     owner: uproc-io
-    name: uproc.cli
+    name: uproc-cli
   draft: false
   prerelease: auto
 
@@ -53,7 +53,7 @@ brews:
     repository:
       owner: uproc-io
       name: homebrew-uproc
-    homepage: https://github.com/uproc-io/uproc.cli
+    homepage: https://github.com/uproc-io/uproc-cli
     description: Uproc CLI
     test: |
       system "#{bin}/uproc --help"
@@ -70,6 +70,6 @@ scoops:
     commit_author:
       name: github-actions[bot]
       email: 41898282+github-actions[bot]@users.noreply.github.com
-    homepage: https://github.com/uproc-io/uproc.cli
+    homepage: https://github.com/uproc-io/uproc-cli
     description: Uproc CLI
     license: Proprietary

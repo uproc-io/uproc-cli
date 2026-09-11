@@ -92,10 +92,10 @@ This updates `Formula/uproc.rb` in `uproc-io/homebrew-uproc` with the release ve
 TAG="vX.Y.Z"
 
 # 1) Check the tag exists in GitHub
-gh api "repos/uproc-io/uproc.cli/git/ref/tags/${TAG}" --jq '.ref'
+gh api "repos/uproc-io/uproc-cli/git/ref/tags/${TAG}" --jq '.ref'
 
 # 2) Check GitHub Release exists for that tag
-gh release view "${TAG}" --repo uproc-io/uproc.cli \
+gh release view "${TAG}" --repo uproc-io/uproc-cli \
   --json tagName,isDraft,isPrerelease,publishedAt,url
 ```
 
@@ -138,7 +138,7 @@ uproc self-update --version v0.1.5   # update to a specific version
 uproc self-update --pre      # allow pre-release versions
 ```
 
-The CLI checks the `uproc-io/uproc.cli` GitHub release for the current platform,
+The CLI checks the `uproc-io/uproc-cli` GitHub release for the current platform,
 verifies the artifact against `checksums.txt` and atomically replaces the running
 binary. When installed via Homebrew or Scoop it prints the package-manager update
 command instead.

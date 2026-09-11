@@ -68,7 +68,7 @@ Distribution notes:
 - Artifacts are produced for Linux/macOS/Windows on `amd64` + `arm64`.
 - Packaging targets include GitHub Releases, Homebrew tap, and Scoop bucket.
 - `uproc self-update` (see `cmd/selfupdate.go`, `internal/update/`) downloads the
-  release asset for the current platform from `uproc-io/uproc.cli`, verifies the
+  release asset for the current platform from `uproc-io/uproc-cli`, verifies the
   checksum and replaces the binary; Homebrew/Scoop installs get an instruction
   instead. A proactive 24h-cached notice runs on every command (opt-out
   `UPROC_NO_UPDATE_CHECK=1`). Keep release asset naming in `.goreleaser.yml`

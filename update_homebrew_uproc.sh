@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-RELEASE_REPO="uproc-io/uproc.cli"
+RELEASE_REPO="uproc-io/uproc-cli"
 TAP_REPO="uproc-io/homebrew-uproc"
 FORMULA_PATH="Formula/uproc.rb"
 DEFAULT_BRANCH="main"
@@ -40,7 +40,7 @@ while [[ $# -gt 0 ]]; do
       shift 2
       ;;
     --push-pr)
-PUSH_MODE="direct"
+      PUSH_MODE="pr"
       shift
       ;;
     --push-direct)
