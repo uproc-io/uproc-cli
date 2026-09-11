@@ -179,10 +179,10 @@ func newLeadsUploadProposalCmd() *cobra.Command {
 			pdfBase64 := base64.StdEncoding.EncodeToString(pdfBytes)
 
 			payload := map[string]any{
-				"lead_id":       leadID,
-				"pdf_content":   pdfBase64,
-				"file_name":     pdfPath,
-				"proposal_key":  proposalKey,
+				"lead_id":      leadID,
+				"pdf_content":  pdfBase64,
+				"file_name":    pdfPath,
+				"proposal_key": proposalKey,
 			}
 			return runModuleAction(cmd, "lead-management", "upload_proposal", payload)
 		},

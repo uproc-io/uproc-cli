@@ -4,6 +4,8 @@ Completed CLI work, grouped by date.
 
 ## 2026-09-11
 
+- **CI format fix and release-tracking cleanup** — Ran `gofmt -w cmd/processes/leads.go` (map literal alignment), which was making the `ci` "Format check" fail on every push; `gofmt -l .`, `go vet ./...`, and `go test ./...` are now clean. Closed the stale TODO/REVIEW items that the canonical-repo fix and the automated distribution resolved: the `307 location <nil>` asset-upload failure (renamed repo) and the manual Scoop/Homebrew publication.
+
 - **Automated Homebrew/Scoop distribution** — GoReleaser now publishes the CLI to the distribution taps with `UPROC_DISTRIBUTION_TOKEN`. Root cause of stale taps was the Homebrew formula being published to the tap root (`uproc.rb`) because `brews` lacked `directory`; added `directory: Formula`, removed the stray root formula, and synced `Formula/uproc.rb` to the current release. Verified end-to-end with `v0.2.4`: GitHub Release assets, Homebrew `Formula/uproc.rb` (`v0.2.4`), and Scoop `uproc.json` (`v0.2.4`) all updated automatically by the workflow, which finished green.
 
 - **CLI bearer user authentication** — CLI profiles now store `user_api_key` rather than customer key/domain/email fields. `login`, `install`, and `update check` accept a user API key, and every authenticated external request sends `Authorization: Bearer <user-api-key>`. Customer authentication headers are no longer sent. Tests: `go test ./...` passed.
