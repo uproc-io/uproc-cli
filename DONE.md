@@ -4,6 +4,10 @@ Completed CLI work, grouped by date.
 
 ## 2026-09-11
 
+- **CLI API externa directa** — Migrados los seis comandos restantes que usaban `/api/v1/external/mcp/call`: export/import completo de customer, template/bulk-create/reset-password de usuarios y `data column update`. El CLI ya no contiene llamadas MCP; mantiene la misma autorización y confirmaciones al usar rutas externas directas. Validación: `go vet ./...`, `go test ./...` y build.
+
+- **Portable Data Management transfer** — Added `uproc applications data-management export-transfer --output <file>` and `import-transfer --file <file> [--confirm]`. The commands call direct external API endpoints, not MCP: `GET /api/v1/external/data-management/transfer` and `POST /api/v1/external/data-management/transfer/import`. Export writes a mode-0600 portable ZIP; import previews by default and confirms a full replacement limited to the authenticated customer's Data Management schema and rows. README and backend CLI/API/MCP docs synchronized. Validation: `go test ./...`.
+
 - **CI format fix and release-tracking cleanup** — Ran `gofmt -w cmd/processes/leads.go` (map literal alignment), which was making the `ci` "Format check" fail on every push; `gofmt -l .`, `go vet ./...`, and `go test ./...` are now clean. Closed the stale TODO/REVIEW items that the canonical-repo fix and the automated distribution resolved: the `307 location <nil>` asset-upload failure (renamed repo) and the manual Scoop/Homebrew publication.
 
 - **Automated Homebrew/Scoop distribution** — GoReleaser now publishes the CLI to the distribution taps with `UPROC_DISTRIBUTION_TOKEN`. Root cause of stale taps was the Homebrew formula being published to the tap root (`uproc.rb`) because `brews` lacked `directory`; added `directory: Formula`, removed the stray root formula, and synced `Formula/uproc.rb` to the current release. Verified end-to-end with `v0.2.4`: GitHub Release assets, Homebrew `Formula/uproc.rb` (`v0.2.4`), and Scoop `uproc.json` (`v0.2.4`) all updated automatically by the workflow, which finished green.

@@ -631,16 +631,13 @@ Examples:
 				return err
 			}
 
-			body, _ := json.Marshal(map[string]any{
-				"name": "admin.customer.export_all",
-				"arguments": map[string]any{
-					"customer_id":   customerID,
-					"include_files": includeFiles,
-					"include_logs":  includeLogs,
-				},
-			})
-
-			respBody, status, reqErr := client.Do("POST", "/api/v1/external/mcp/call", body)
+			path := fmt.Sprintf(
+				"/api/v1/external/admin/customers/%d/export?include_files=%t&include_logs=%t",
+				customerID,
+				includeFiles,
+				includeLogs,
+			)
+			respBody, status, reqErr := client.Do("GET", path, nil)
 			if reqErr != nil {
 				return printResponse(cmd, respBody, status, reqErr)
 			}
@@ -725,12 +722,8 @@ Examples:
 				return fmt.Errorf("one of --file, --upload-id, or --zip-base64 is required")
 			}
 
-			body, _ := json.Marshal(map[string]any{
-				"name":      "admin.customer.import_all",
-				"arguments": argsMap,
-			})
-
-			respBody, status, reqErr := client.Do("POST", "/api/v1/external/mcp/call", body)
+			body, _ := json.Marshal(argsMap)
+			respBody, status, reqErr := client.Do("POST", "/api/v1/external/admin/customers/import", body)
 			return printResponse(cmd, respBody, status, reqErr)
 		},
 	}
@@ -752,11 +745,7 @@ func newAdminUsersTemplateCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			body, _ := json.Marshal(map[string]any{
-				"name":      "admin.users.import_template",
-				"arguments": map[string]any{},
-			})
-			respBody, status, reqErr := client.Do("POST", "/api/v1/external/mcp/call", body)
+			respBody, status, reqErr := client.Do("GET", "/api/v1/external/admin/users/import-template", nil)
 			return printResponse(cmd, respBody, status, reqErr)
 		},
 	}
@@ -779,13 +768,10 @@ func newAdminUsersBulkCreateCmd() *cobra.Command {
 				return err
 			}
 			body, _ := json.Marshal(map[string]any{
-				"name": "admin.users.bulk_create",
-				"arguments": map[string]any{
-					"csv_base64": base64.StdEncoding.EncodeToString(content),
-					"confirm":    confirm,
-				},
+				"csv_base64": base64.StdEncoding.EncodeToString(content),
+				"confirm":    confirm,
 			})
-			respBody, status, reqErr := client.Do("POST", "/api/v1/external/mcp/call", body)
+			respBody, status, reqErr := client.Do("POST", "/api/v1/external/admin/users/bulk-create", body)
 			return printResponse(cmd, respBody, status, reqErr)
 		},
 	}
@@ -810,13 +796,8 @@ func newAdminUsersResetPasswordCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			body, _ := json.Marshal(map[string]any{
-				"name": "admin.users.send_reset_password",
-				"arguments": map[string]any{
-					"user_id": userID,
-				},
-			})
-			respBody, status, reqErr := client.Do("POST", "/api/v1/external/mcp/call", body)
+			path := fmt.Sprintf("/api/v1/external/admin/users/%d/reset-password", userID)
+			respBody, status, reqErr := client.Do("POST", path, nil)
 			return printResponse(cmd, respBody, status, reqErr)
 		},
 	}

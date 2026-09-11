@@ -1,6 +1,13 @@
 package processes
 
-import "github.com/spf13/cobra"
+import (
+	"encoding/base64"
+	"encoding/json"
+	"fmt"
+	"os"
+
+	"github.com/spf13/cobra"
+)
 
 func newDataManagementCmd() *cobra.Command {
 	cmd := &cobra.Command{
@@ -21,6 +28,83 @@ func newDataManagementCmd() *cobra.Command {
 	cmd.AddCommand(newDMGetRowMappingsCmd())
 	cmd.AddCommand(newDMSmartImportPreviewCmd())
 	cmd.AddCommand(newDMSmartImportExecuteCmd())
+	cmd.AddCommand(newDMExportTransferCmd())
+	cmd.AddCommand(newDMImportTransferCmd())
+	return cmd
+}
+
+func newDMExportTransferCmd() *cobra.Command {
+	var output string
+
+	cmd := &cobra.Command{
+		Use:   "export-transfer",
+		Short: "Export all Data Management schema and rows to a portable ZIP",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if output == "" {
+				return fmt.Errorf("--output is required")
+			}
+			client, err := mustClient()
+			if err != nil {
+				return err
+			}
+			response, status, reqErr := client.Do("GET", "/api/v1/external/data-management/transfer", nil)
+			if reqErr != nil || status != 200 {
+				return printResponse(cmd, response, status, reqErr)
+			}
+			var result struct {
+				Success bool `json:"success"`
+				Data    struct {
+					ZipBase64 string `json:"zip_base64"`
+				} `json:"data"`
+			}
+			if err := json.Unmarshal(response, &result); err != nil || !result.Success || result.Data.ZipBase64 == "" {
+				return printResponse(cmd, response, status, nil)
+			}
+			archive, err := base64.StdEncoding.DecodeString(result.Data.ZipBase64)
+			if err != nil {
+				return fmt.Errorf("cannot decode transfer ZIP: %w", err)
+			}
+			if err := os.WriteFile(output, archive, 0600); err != nil {
+				return fmt.Errorf("cannot write %s: %w", output, err)
+			}
+			fmt.Fprintf(cmd.OutOrStdout(), "Data Management transfer saved to %s (%d bytes)\n", output, len(archive))
+			return nil
+		},
+	}
+	cmd.Flags().StringVarP(&output, "output", "o", "", "Portable ZIP output path")
+	return cmd
+}
+
+func newDMImportTransferCmd() *cobra.Command {
+	var file string
+	var confirm bool
+
+	cmd := &cobra.Command{
+		Use:   "import-transfer",
+		Short: "Preview or replace all Data Management schema and rows from a portable ZIP",
+		Long:  "Without --confirm, shows a replacement preview. --confirm permanently replaces only the authenticated customer's Data Management tables.",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if file == "" {
+				return fmt.Errorf("--file is required")
+			}
+			archive, err := os.ReadFile(file)
+			if err != nil {
+				return fmt.Errorf("cannot read %s: %w", file, err)
+			}
+			client, err := mustClient()
+			if err != nil {
+				return err
+			}
+			body, _ := json.Marshal(map[string]any{
+				"zip_base64": base64.StdEncoding.EncodeToString(archive),
+				"confirm":    confirm,
+			})
+			response, status, reqErr := client.Do("POST", "/api/v1/external/data-management/transfer/import", body)
+			return printResponse(cmd, response, status, reqErr)
+		},
+	}
+	cmd.Flags().StringVarP(&file, "file", "f", "", "Portable Data Management ZIP")
+	cmd.Flags().BoolVar(&confirm, "confirm", false, "Replace all Data Management tables for the authenticated customer")
 	return cmd
 }
 

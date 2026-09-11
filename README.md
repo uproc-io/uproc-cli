@@ -222,6 +222,16 @@ uproc applications data-process runs
 
 `search` finds tools by key/name/description; `tool <key>` shows the full spec (params, accepted values, format, cost) so you can build an `execute` call. `execute` runs a tool inline (no daily inline-call limit; balance and daily budget apply). `batch` queues a background run over a data-management entity.
 
+### Data Management transfer
+
+```bash
+uproc applications data-management export-transfer --output hospicare.dm.zip
+uproc applications data-management import-transfer --file hospicare.dm.zip
+uproc applications data-management import-transfer --file hospicare.dm.zip --confirm
+```
+
+The export contains only Data Management tables, columns, rows, and relations. Import without `--confirm` is a preview; confirming replaces all Data Management data for the authenticated customer. It does not transfer users, credentials, customer settings, or file attachments.
+
 ### Profile (connected user)
 
 ```bash

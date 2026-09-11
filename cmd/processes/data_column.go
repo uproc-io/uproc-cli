@@ -96,12 +96,8 @@ Examples:
 				}
 			}
 
-			body, _ := json.Marshal(map[string]any{
-				"name":      "data-management.update_column",
-				"arguments": arguments,
-			})
-
-			respBody, status, reqErr := client.Do("POST", "/api/v1/external/mcp/call", body)
+			body, _ := json.Marshal(arguments)
+			respBody, status, reqErr := client.Do("PUT", "/api/v1/external/data-management/columns", body)
 			return printResponse(cmd, respBody, status, reqErr)
 		},
 	}
