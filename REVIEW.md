@@ -13,6 +13,12 @@ Items needing human review: technical debt, workarounds, pending decisions, scop
 
 ## Entries
 
+- Date: `2026-09-11` · Area: `release distribution`
+  - Item: GoReleaser publishes GitHub Release assets successfully but cannot update the Homebrew and Scoop repositories from GitHub Actions.
+  - Reason: The default workflow `GITHUB_TOKEN` has no cross-repository write permission; Homebrew and Scoop were updated manually over SSH for v0.2.1.
+  - Impact: Release workflow remains red after successful artifact publication unless distribution uses a dedicated cross-repository token or a separate authenticated workflow.
+  - Status: `pending`
+
 - Date: `2026-08-16` · Area: `self-update` (Windows)
   - Item: En Windows no se puede reemplazar un ejecutable en uso; `replaceExecutable` deja el binario nuevo como `<uproc>.exe.new` e imprime instrucciones para el swap manual.
   - Reason: Reemplazo atómico del exe en ejecución requiere un shim/rename póstumo; se decidió no añadir esa complejidad en v1 (uso principal macOS/Linux).
@@ -48,4 +54,3 @@ Items needing human review: technical debt, workarounds, pending decisions, scop
   - Reason: El cooldown de 24h (`update-check.json`) mitiga el uso normal; no se autentica la petición.
   - Impact: En condiciones normales inapreciable; el fallo se silencia y no bloquea ningún comando.
   - Status: `won't_do` (aceptado)
-
