@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -108,7 +109,7 @@ func newDMImportTransferCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "import-transfer",
 		Short: "Preview or replace all Data Management schema and rows from a portable ZIP",
-		Long:  "Without --confirm, shows a replacement preview. --confirm permanently replaces only the authenticated customer's Data Management tables.",
+		Long:  "Without --confirm, shows a replacement preview. --confirm permanently replaces only the authenticated customer's Data Management tables.\n\nThe upload runs asynchronously; the CLI polls until completion.",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if file == "" {
 				return fmt.Errorf("--file is required")
@@ -126,7 +127,47 @@ func newDMImportTransferCmd() *cobra.Command {
 				"confirm":    confirm,
 			})
 			response, status, reqErr := client.Do("POST", "/api/v1/external/data-management/transfer/import", body)
-			return printResponse(cmd, response, status, reqErr)
+			if reqErr != nil || status != 200 {
+				return printResponse(cmd, response, status, reqErr)
+			}
+			var enqueue struct {
+				Success  bool   `json:"success"`
+				UploadID string `json:"upload_id"`
+				Status   string `json:"status"`
+			}
+			if err := json.Unmarshal(response, &enqueue); err != nil || !enqueue.Success {
+				return printResponse(cmd, response, status, nil)
+			}
+			fmt.Fprintf(cmd.OutOrStdout(), "Import queued (upload %s). Polling status...\n", enqueue.UploadID)
+
+			var final []byte
+			for {
+				statusResp, st, err := client.Do("GET", "/api/v1/external/data-management/transfer/import/status/"+enqueue.UploadID, nil)
+				if err != nil || st != 200 {
+					fmt.Fprintf(cmd.ErrOrStderr(), "Error polling: %v (status %d)\n", err, st)
+					return printResponse(cmd, statusResp, st, err)
+				}
+				var poll struct {
+					Success bool   `json:"success"`
+					Status  string `json:"status"`
+					Error   string `json:"error,omitempty"`
+					Data    json.RawMessage `json:"data,omitempty"`
+				}
+				if err := json.Unmarshal(statusResp, &poll); err != nil {
+					return fmt.Errorf("cannot decode status: %w", err)
+				}
+				if poll.Status == "done" {
+					final = statusResp
+					break
+				}
+				if poll.Status == "error" {
+					fmt.Fprintf(cmd.ErrOrStderr(), "Import failed: %s\n", poll.Error)
+					return printResponse(cmd, statusResp, 400, fmt.Errorf("import error: %s", poll.Error))
+				}
+				// Still processing – poll every 1s
+				time.Sleep(1 * time.Second)
+			}
+			return printResponse(cmd, final, 200, nil)
 		},
 	}
 	cmd.Flags().StringVarP(&file, "file", "f", "", "Portable Data Management ZIP")
