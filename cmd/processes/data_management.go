@@ -4,7 +4,10 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
+	"mime/multipart"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -109,34 +112,60 @@ func newDMImportTransferCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "import-transfer",
 		Short: "Preview or replace all Data Management schema and rows from a portable ZIP",
-		Long:  "Without --confirm, shows a replacement preview. --confirm permanently replaces only the authenticated customer's Data Management tables.\n\nThe upload runs asynchronously; the CLI polls until completion.",
+		Long:  "Without --confirm, shows a replacement preview. --confirm permanently replaces only the authenticated customer's Data Management tables.\n\nUploads via multipart/form-data (no base64 overhead); runs async, CLI polls until completion.",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if file == "" {
 				return fmt.Errorf("--file is required")
 			}
-			archive, err := os.ReadFile(file)
-			if err != nil {
-				return fmt.Errorf("cannot read %s: %w", file, err)
-			}
+
 			client, err := mustClient()
 			if err != nil {
 				return err
 			}
-			body, _ := json.Marshal(map[string]any{
-				"zip_base64": base64.StdEncoding.EncodeToString(archive),
-				"confirm":    confirm,
-			})
-			response, status, reqErr := client.Do("POST", "/api/v1/external/data-management/transfer/import", body)
-			if reqErr != nil || status != 200 {
-				return printResponse(cmd, response, status, reqErr)
+
+			// Read the ZIP file
+			archive, err := os.ReadFile(file)
+			if err != nil {
+				return fmt.Errorf("cannot read %s: %w", file, err)
 			}
+
+			// Build multipart body
+			pr, pw := io.Pipe()
+			mw := multipart.NewWriter(pw)
+
+			// Send ZIP as multipart file field
+			part, err := mw.CreateFormFile("file", filepath.Base(file))
+			if err != nil {
+				return fmt.Errorf("cannot create form file: %w", err)
+			}
+			if _, err := part.Write(archive); err != nil {
+				pw.Close()
+				return fmt.Errorf("cannot write file: %w", err)
+			}
+
+			// Set confirm flag as form field
+			if err := mw.WriteField("confirm", fmt.Sprintf("%v", confirm)); err != nil {
+				pw.Close()
+				return fmt.Errorf("cannot write confirm: %w", err)
+			}
+
+			go func() {
+				mw.Close()
+				pw.Close()
+			}()
+
+			respBody, status, err := client.DoMultipart("POST", "/api/v1/external/data-management/transfer/import", mw.FormDataContentType(), pr)
+			if err != nil || status != 200 {
+				return fmt.Errorf("multipart upload failed (http %d): %s", status, string(respBody))
+			}
+
 			var enqueue struct {
 				Success  bool   `json:"success"`
 				UploadID string `json:"upload_id"`
 				Status   string `json:"status"`
 			}
-			if err := json.Unmarshal(response, &enqueue); err != nil || !enqueue.Success {
-				return printResponse(cmd, response, status, nil)
+			if err := json.Unmarshal(respBody, &enqueue); err != nil || !enqueue.Success {
+				return fmt.Errorf("upload not queued: %s", string(respBody))
 			}
 			fmt.Fprintf(cmd.OutOrStdout(), "Import queued (upload %s). Polling status...\n", enqueue.UploadID)
 
