@@ -40,7 +40,7 @@ func NewRootCmd(version string) *cobra.Command {
 
 	rootCmd.AddCommand(processes.NewCmd())
 	rootCmd.AddCommand(processes.NewProcessesAliasCmd())
-	rootCmd.AddCommand(admin.NewLicenseCmd())
+	rootCmd.AddCommand(admin.NewAdminCmd())
 	rootCmd.AddCommand(newOperationsCmd())
 	rootCmd.AddCommand(newDataCmd())
 	rootCmd.AddCommand(newConfigCmd())

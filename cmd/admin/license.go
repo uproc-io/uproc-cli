@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -11,11 +12,11 @@ import (
 	"bizzmod-cli/internal/config"
 )
 
-// newLicenseCmd creates the `uproc admin license` command group.
+// NewLicenseCmd creates the `uproc admin license` command group.
 func NewLicenseCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "license",
-		Short: "Manage and verify instance license",
+		Short: "Inspect and manage the instance license",
 	}
 	cmd.AddCommand(newLicenseStatusCmd())
 	cmd.AddCommand(newLicenseCheckCmd())
@@ -29,13 +30,16 @@ func NewLicenseCmd() *cobra.Command {
 func newLicenseStatusCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "status",
-		Short: "Show license status",
+		Short: "Show the current license status",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cfg, err := config.Load()
 			if err != nil {
 				return fmt.Errorf("config load error: %w", err)
 			}
 			client := api.NewClient(cfg)
+			if err := ensureRole(cmd, client, "license status", "admin", "superadmin"); err != nil {
+				return err
+			}
 
 			licenseKey := os.Getenv("UPROC_LICENSE_KEY")
 			if licenseKey == "" {
@@ -50,13 +54,13 @@ func newLicenseStatusCmd() *cobra.Command {
 			}
 
 			var result struct {
-				Valid        bool    `json:"valid"`
-				Forced       bool    `json:"forced"`
-				ForcedReason string  `json:"forced_reason,omitempty"`
-				Reason       string  `json:"reason,omitempty"`
-				CustomerName string  `json:"customer_name"`
-				ExpiresAt    *string `json:"expires_at,omitempty"`
-				ModulesActive int   `json:"modules_active"`
+				Valid         bool    `json:"valid"`
+				Forced        bool    `json:"forced"`
+				ForcedReason  string  `json:"forced_reason,omitempty"`
+				Reason        string  `json:"reason,omitempty"`
+				CustomerName  string  `json:"customer_name"`
+				ExpiresAt     *string `json:"expires_at,omitempty"`
+				ModulesActive int     `json:"modules_active"`
 			}
 			if err := json.Unmarshal(response, &result); err != nil {
 				return fmt.Errorf("json decode error: %w", err)
@@ -80,13 +84,16 @@ func newLicenseStatusCmd() *cobra.Command {
 func newLicenseCheckCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "check",
-		Short: "Force immediate license check against cloud",
+		Short: "Force an immediate validation against the cloud",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cfg, err := config.Load()
 			if err != nil {
 				return fmt.Errorf("config load error: %w", err)
 			}
 			client := api.NewClient(cfg)
+			if err := ensureRole(cmd, client, "license check", "admin", "superadmin"); err != nil {
+				return err
+			}
 
 			licenseKey := os.Getenv("UPROC_LICENSE_KEY")
 			if licenseKey == "" {
@@ -99,14 +106,12 @@ func newLicenseCheckCmd() *cobra.Command {
 			if err != nil || status != 200 {
 				return printResponse(cmd, response, status, err)
 			}
-
-			fmt.Fprintf(cmd.OutOrStdout(), "License check completed (response logged above).\n")
 			return printResponse(cmd, response, status, nil)
 		},
 	}
 }
 
-// ── license force ─────────────────────────────────────────────────
+// ── license force / unforce (superadmin only) ─────────────────────
 
 func newLicenseForceCmd() *cobra.Command {
 	var customerID int
@@ -114,43 +119,17 @@ func newLicenseForceCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "force",
-		Short: "Force license validation (superadmin only)",
+		Short: "Force a customer license valid, bypassing Stripe (superadmin only)",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cfg, err := config.Load()
-			if err != nil {
-				return fmt.Errorf("config load error: %w", err)
-			}
-			client := api.NewClient(cfg)
-
-			body, _ := json.Marshal(map[string]any{
-				"customer_id": customerID,
-				"force":       true,
-				"reason":      reason,
-			})
-			response, status, err := client.Do("PATCH", "/api/v1/external/admin/customers/"+fmt.Sprintf("%d", customerID)+"/license-force", body)
-			if err != nil || status != 200 {
-				return printResponse(cmd, response, status, err)
-			}
-
-			var result struct {
-				Success bool   `json:"success"`
-				Forced  bool   `json:"forced"`
-				Reason  string `json:"reason"`
-			}
-			if err := json.Unmarshal(response, &result); err == nil {
-				fmt.Fprintf(cmd.OutOrStdout(), "License forced for customer %d: valid=%v reason=%s\n", customerID, result.Forced, result.Reason)
-			}
-			return nil
+			return runLicenseForce(cmd, customerID, true, reason)
 		},
 	}
 	cmd.Flags().IntVar(&customerID, "customer-id", 0, "Customer ID to force")
-	cmd.Flags().StringVar(&reason, "reason", "", "Reason for force (required)")
+	cmd.Flags().StringVar(&reason, "reason", "", "Reason for forcing (required)")
 	_ = cmd.MarkFlagRequired("customer-id")
 	_ = cmd.MarkFlagRequired("reason")
 	return cmd
 }
-
-// ── license unforce ───────────────────────────────────────────────
 
 func newLicenseUnforceCmd() *cobra.Command {
 	var customerID int
@@ -158,40 +137,75 @@ func newLicenseUnforceCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "unforce",
-		Short: "Unforce license (stop forcing validation, trust Stripe)",
+		Short: "Stop forcing a customer license, trust Stripe again (superadmin only)",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cfg, err := config.Load()
-			if err != nil {
-				return fmt.Errorf("config load error: %w", err)
-			}
-			client := api.NewClient(cfg)
-
-			body, _ := json.Marshal(map[string]any{
-				"customer_id": customerID,
-				"force":       false,
-				"reason":      reason,
-			})
-			response, status, err := client.Do("PATCH", "/api/v1/external/admin/customers/"+fmt.Sprintf("%d", customerID)+"/license-force", body)
-			if err != nil || status != 200 {
-				return printResponse(cmd, response, status, err)
-			}
-
-			var result struct {
-				Success bool   `json:"success"`
-				Forced  bool   `json:"forced"`
-				Reason  string `json:"reason"`
-			}
-			if err := json.Unmarshal(response, &result); err == nil {
-				fmt.Fprintf(cmd.OutOrStdout(), "License unforced for customer %d: valid=%v reason=%s\n", customerID, result.Forced, result.Reason)
-			}
-			return nil
+			return runLicenseForce(cmd, customerID, false, reason)
 		},
 	}
 	cmd.Flags().IntVar(&customerID, "customer-id", 0, "Customer ID to unforce")
-	cmd.Flags().StringVar(&reason, "reason", "", "Reason for unforce (required)")
+	cmd.Flags().StringVar(&reason, "reason", "", "Reason for unforcing (required)")
 	_ = cmd.MarkFlagRequired("customer-id")
 	_ = cmd.MarkFlagRequired("reason")
 	return cmd
+}
+
+func runLicenseForce(cmd *cobra.Command, customerID int, force bool, reason string) error {
+	cfg, err := config.Load()
+	if err != nil {
+		return fmt.Errorf("config load error: %w", err)
+	}
+	client := api.NewClient(cfg)
+	if err := ensureRole(cmd, client, "license management", "superadmin"); err != nil {
+		return err
+	}
+
+	body, _ := json.Marshal(map[string]any{"force": force, "reason": reason})
+	path := fmt.Sprintf("/api/v1/external/admin/customers/%d/license-force", customerID)
+	response, status, err := client.Do("PATCH", path, body)
+	if err != nil || status != 200 {
+		return printResponse(cmd, response, status, err)
+	}
+
+	var result struct {
+		Success bool   `json:"success"`
+		Forced  bool   `json:"forced"`
+		Reason  string `json:"reason"`
+	}
+	if err := json.Unmarshal(response, &result); err == nil {
+		action := "forced"
+		if !force {
+			action = "unforced"
+		}
+		fmt.Fprintf(cmd.OutOrStdout(), "License %s for customer %d (forced=%v).\n", action, customerID, result.Forced)
+	}
+	return nil
+}
+
+// ── permissions ───────────────────────────────────────────────────
+
+// ensureRole verifies the connected CLI user has one of the allowed roles.
+func ensureRole(cmd *cobra.Command, client *api.Client, scope string, allowed ...string) error {
+	body, status, err := client.Do("GET", "/api/v1/external/profile", nil)
+	if err != nil || status != 200 {
+		return fmt.Errorf("cannot verify permissions for %s (http %d)", scope, status)
+	}
+
+	var parsed struct {
+		Data struct {
+			Role string `json:"role"`
+		} `json:"data"`
+	}
+	if err := json.Unmarshal(body, &parsed); err != nil {
+		return fmt.Errorf("cannot parse profile response: %w", err)
+	}
+
+	role := strings.ToLower(strings.TrimSpace(parsed.Data.Role))
+	for _, candidate := range allowed {
+		if role == candidate {
+			return nil
+		}
+	}
+	return fmt.Errorf("permission denied: %s requires %s (your role: %s)", scope, strings.Join(allowed, " or "), role)
 }
 
 // ── helpers ───────────────────────────────────────────────────────
@@ -203,12 +217,12 @@ func printResponse(cmd *cobra.Command, response []byte, status int, err error) e
 			fmt.Fprintf(cmd.ErrOrStderr(), ": %v", err)
 		}
 		fmt.Fprintln(cmd.ErrOrStderr())
-		if response != nil && len(response) > 0 {
+		if len(response) > 0 {
 			fmt.Fprintf(cmd.ErrOrStderr(), "%s\n", string(response))
 		}
 		return fmt.Errorf("http %d", status)
 	}
-	if response != nil && len(response) > 0 {
+	if len(response) > 0 {
 		fmt.Fprintf(cmd.OutOrStdout(), "%s\n", string(response))
 	}
 	return nil
