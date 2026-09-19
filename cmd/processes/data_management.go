@@ -133,25 +133,33 @@ func newDMImportTransferCmd() *cobra.Command {
 			pr, pw := io.Pipe()
 			mw := multipart.NewWriter(pw)
 
-			// Send ZIP as multipart file field
-			part, err := mw.CreateFormFile("file", filepath.Base(file))
-			if err != nil {
-				return fmt.Errorf("cannot create form file: %w", err)
-			}
-			if _, err := part.Write(archive); err != nil {
-				pw.Close()
-				return fmt.Errorf("cannot write file: %w", err)
-			}
-
-			// Set confirm flag as form field
-			if err := mw.WriteField("confirm", fmt.Sprintf("%v", confirm)); err != nil {
-				pw.Close()
-				return fmt.Errorf("cannot write confirm: %w", err)
-			}
-
+			// io.Pipe is synchronous: every Write blocks until the reader
+			// consumes it, so the multipart encoding must run concurrently
+			// with the HTTP request that streams the pipe as its body.
 			go func() {
-				mw.Close()
-				pw.Close()
+				var writeErr error
+				defer func() {
+					if writeErr != nil {
+						pw.CloseWithError(writeErr)
+						return
+					}
+					pw.Close()
+				}()
+
+				part, err := mw.CreateFormFile("file", filepath.Base(file))
+				if err != nil {
+					writeErr = fmt.Errorf("cannot create form file: %w", err)
+					return
+				}
+				if _, err := part.Write(archive); err != nil {
+					writeErr = fmt.Errorf("cannot write file: %w", err)
+					return
+				}
+				if err := mw.WriteField("confirm", fmt.Sprintf("%v", confirm)); err != nil {
+					writeErr = fmt.Errorf("cannot write confirm: %w", err)
+					return
+				}
+				writeErr = mw.Close()
 			}()
 
 			respBody, status, err := client.DoMultipart("POST", "/api/v1/external/data-management/transfer/import", mw.FormDataContentType(), pr)
@@ -177,9 +185,9 @@ func newDMImportTransferCmd() *cobra.Command {
 					return printResponse(cmd, statusResp, st, err)
 				}
 				var poll struct {
-					Success bool   `json:"success"`
-					Status  string `json:"status"`
-					Error   string `json:"error,omitempty"`
+					Success bool            `json:"success"`
+					Status  string          `json:"status"`
+					Error   string          `json:"error,omitempty"`
 					Data    json.RawMessage `json:"data,omitempty"`
 				}
 				if err := json.Unmarshal(statusResp, &poll); err != nil {
