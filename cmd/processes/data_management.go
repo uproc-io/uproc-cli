@@ -201,6 +201,14 @@ func newDMImportTransferCmd() *cobra.Command {
 					fmt.Fprintf(cmd.ErrOrStderr(), "Import failed: %s\n", poll.Error)
 					return printResponse(cmd, statusResp, 400, fmt.Errorf("import error: %s", poll.Error))
 				}
+				if poll.Status == "not_found" {
+					fmt.Fprintf(cmd.ErrOrStderr(), "Error polling: upload_id not found\n")
+					return printResponse(cmd, statusResp, 404, fmt.Errorf("upload_id not found"))
+				}
+				if poll.Status == "unknown" {
+					fmt.Fprintf(cmd.ErrOrStderr(), "Error polling: unknown status\n")
+					return printResponse(cmd, statusResp, 500, fmt.Errorf("unknown status"))
+				}
 				// Still processing – poll every 1s
 				time.Sleep(1 * time.Second)
 			}
