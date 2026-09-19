@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bizzmod-cli/cmd/admin"
 	"bizzmod-cli/cmd/processes"
 	"bizzmod-cli/internal/config"
 	"bizzmod-cli/internal/update"
@@ -39,6 +40,7 @@ func NewRootCmd(version string) *cobra.Command {
 
 	rootCmd.AddCommand(processes.NewCmd())
 	rootCmd.AddCommand(processes.NewProcessesAliasCmd())
+	rootCmd.AddCommand(admin.NewLicenseCmd())
 	rootCmd.AddCommand(newOperationsCmd())
 	rootCmd.AddCommand(newDataCmd())
 	rootCmd.AddCommand(newConfigCmd())
