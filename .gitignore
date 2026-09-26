@@ -4,3 +4,4 @@ dist/
 config.yml
 *.zip
 .DS_Store
+.codegraph
