@@ -93,3 +93,17 @@ Tracking policy
 
 - Work is tracked via `TODO.md` (pending), `DONE.md` (completed), and `REVIEW.md` (deferred decisions).
 - No `CHANGELOG.md` is maintained.
+
+--------------------------------------------------------------------------------
+Commit, test and push (mandatory)
+--------------------------------------------------------------------------------
+
+- **After every executed plan and every set of modified code**, close the change set with:
+  **gates green → tracking docs updated → commit → push to `main`**. Do not wait for an
+  explicit "commit push" request (root `AGENTS.md`, "Commit, Test and Push (mandatory)").
+- Gates: `gofmt -w .`, `go vet ./...`, `go test ./...` (and `go build` for the binary).
+  Command/flag changes must also refresh `README.md` and, per the rule above, the backend
+  CLI docs in the same change set.
+- Commit: one coherent change set, only the touched files staged (`git status --short` first),
+  descriptive imperative message, no secrets or environment files.
+- Push to `main` after the green commit; report the commit hash in the final summary.
