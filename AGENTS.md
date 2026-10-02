@@ -98,7 +98,9 @@ Tracking policy
 Commit, test and push (mandatory)
 --------------------------------------------------------------------------------
 
-- **After every executed plan and every set of modified code**, close the change set with:
+- **Commit and push happen ONCE, at the END of a plan — after ALL of its steps have been
+  applied — never between steps.** Steps that modify code do not commit or push mid-plan;
+  when the last step is done, close the whole change set automatically with:
   **gates green → tracking docs updated → commit → push to `main`**. Do not wait for an
   explicit "commit push" request (root `AGENTS.md`, "Commit, Test and Push (mandatory)").
 - Gates: `gofmt -w .`, `go vet ./...`, `go test ./...` (and `go build` for the binary).
