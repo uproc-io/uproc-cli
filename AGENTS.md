@@ -1,5 +1,16 @@
 # AGENTS.md
 
+## Branch discipline (mandatory)
+
+- **Before making any change in this repository, confirm it is on its development branch and switch if it is not.** The development branch is **`dev`**; if the repository has **no `dev` branch**, use **`main`**.
+  ```sh
+  git branch --show-current
+  git checkout dev   # or `main` when the repo has no `dev` branch; then `git pull --rebase`
+  ```
+- Commit feature/fix work on the development branch. When a `dev` branch exists, never commit feature work on `main` (`main` only receives merges from `dev`).
+- If you find yourself on the wrong branch, move the commit instead of redoing it: `git checkout dev && git cherry-pick <sha> && git push origin dev`, then restore the other branch. Report the branch in the final summary.
+
+
 This file is the CLI subproject guide for agentic coding in `cli/`.
 The `cli/` folder is a standalone repository mounted via symlink in the mono-repo.
 
