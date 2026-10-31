@@ -34,6 +34,7 @@ func newDataManagementCmd() *cobra.Command {
 	cmd.AddCommand(newDMSmartImportExecuteCmd())
 	cmd.AddCommand(newDMExportTransferCmd())
 	cmd.AddCommand(newDMImportTransferCmd())
+	cmd.AddCommand(newDMQualityCmd())
 	return cmd
 }
 

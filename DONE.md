@@ -1,5 +1,10 @@
 # DONE
 
+## 2026-10-31
+
+- **Data Management — comandos de calidad de datos (HECHO · T2 · cli)** — Nuevo `uproc applications data-management quality` con `get`, `analyze`, `rules` (accept/reject de reglas inferidas) y `correct` (preview por defecto, `--apply` para aplicar). Consume los endpoints externos `/api/v1/external/data-management/quality*`; `gofmt`, `go vet`, `go test ./...` y build verdes. `[cli]`
+
+
 Completed CLI work, grouped by date.
 
 ## 2026-09-11
