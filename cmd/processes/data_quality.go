@@ -24,6 +24,7 @@ Examples:
 	cmd.AddCommand(newDMQualityAnalyzeCmd())
 	cmd.AddCommand(newDMQualityRulesCmd())
 	cmd.AddCommand(newDMQualityCorrectCmd())
+	cmd.AddCommand(newDMQualityRowsCmd())
 	return cmd
 }
 
@@ -170,6 +171,46 @@ func newDMQualityCorrectCmd() *cobra.Command {
 	cmd.Flags().StringVar(&columnKey, "column-key", "", "Column key")
 	cmd.Flags().BoolVar(&apply, "apply", false, "Apply the corrections (default: preview only)")
 	cmd.Flags().IntVar(&limit, "limit", 50, "Max rows to preview/apply")
+	return cmd
+}
+
+func newDMQualityRowsCmd() *cobra.Command {
+	var entityID, page, limit int
+	var entitySlug, columnKey, rule string
+	cmd := &cobra.Command{
+		Use:   "rows",
+		Short: "List rows affected by one quality finding",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if entityID <= 0 && entitySlug == "" {
+				return fmt.Errorf("--entity-id or --entity-slug is required")
+			}
+			if columnKey == "" || rule == "" {
+				return fmt.Errorf("--column-key and --rule are required")
+			}
+			client, err := mustClient()
+			if err != nil {
+				return err
+			}
+			query := fmt.Sprintf("column_key=%s&rule=%s&page=%d&limit=%d", columnKey, rule, page, limit)
+			if entitySlug != "" {
+				query += "&entity_slug=" + entitySlug
+			} else {
+				query += fmt.Sprintf("&entity_id=%d", entityID)
+			}
+			response, status, reqErr := client.Do(
+				"GET",
+				"/api/v1/external/data-management/quality/rows?"+query,
+				nil,
+			)
+			return printResponse(cmd, response, status, reqErr)
+		},
+	}
+	cmd.Flags().IntVar(&entityID, "entity-id", 0, "Table ID")
+	cmd.Flags().StringVar(&entitySlug, "entity-slug", "", "Table slug (alternative to --entity-id)")
+	cmd.Flags().StringVar(&columnKey, "column-key", "", "Column key")
+	cmd.Flags().StringVar(&rule, "rule", "", "Rule id from the finding")
+	cmd.Flags().IntVar(&page, "page", 1, "Page")
+	cmd.Flags().IntVar(&limit, "limit", 50, "Page size")
 	return cmd
 }
 
