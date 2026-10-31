@@ -6,7 +6,13 @@ All items grouped by date under each section.
 
 ## Active
 
-### 2026-06-11
+### 2026-10-31
+
+- **CLI — Campaign Automation: campañas recurrentes, runs y stats (PENDIENTE · complejidad: T2 · ~2-3d · cli · plan: `../backend/docs/plans/campaign-automation-internal-newsletter.md`)** — Añadir comandos `uproc applications campaign schedule`, `campaign run`, `campaign stats`, `campaign suppressions`; wrappers de los endpoints externos nuevos; output formateado (tabla/list) y flags `--campaign-id`, `--since`, `--channel`, `--provider`. Depende de back F9. [cli]
+
+- **CLI — acceso a /summary y /reports (PENDIENTE · complejidad: T2 · ~1d · cli · depende de back)** — **Estado actual**: CLI (`uproc applications …`) no tiene subcomando para summary ni reports. El back tiene endpoints `/api/v1/summary`, `/api/v1/summary/layout`, `/api/v1/reports/weekly`, `/api/v1/reports/security-report`, y más en `business_channel.py`. **Alcance**: (1) nuevos comandos `uproc applications summary get`, `uproc applications summary layout`, `uproc applications reports get`, `uproc applications reports list-periods`; (2) wrappers de `/api/v1/external/*` existentes; (3) output formateado (tabla/list); (4) flags: `--days`, `--customer-id`, `--kind`, `--period-end`, `--all`. Depende del item back "MCP/CLI — acceso a /summary y /reports". [cli]
+
+## 2026-06-11
 
 - Validate whether admin usage commands also need CSV/export support once backend exposes an external export route.
 
