@@ -6,7 +6,9 @@ All items grouped by date under each section.
 
 ## Active
 
-### 2026-10-31
+### 2026-11-02
+
+- **CLI — superadmin acceso a datos de producción: logs, traces AI, payments (ANÁLISIS · complejidad: T1 · cli)** — **Estado actual**: CLI expone `uproc applications admin logs` (`--module-slug` obligatorio), `uproc applications admin ai-requests` (filtro por customer-id, module-slug), `uproc applications admin usage list|summary` (filtro por customer-id, module-slug), `uproc applications admin users|customers|credentials|modules|tickets|changelog` — todos con role guard admin/superadmin. **GAP**: no existe comando `uproc applications admin payments` ni `uproc applications admin transactions` — el usuario NO puede consultar pagos/transacciones desde CLI. **Veredicto**: el superadmin ya puede leer logs, AI requests/traces, usage stats y datos administrativos vía CLI. Solo le falta acceso a datos de pagos/transactions. [cli]
 
 - **Seguridad CLI — supply chain y CI (PENDIENTE · complejidad: T2 · ~1-2d · cli · plan: `../backend/docs/audits/security-audit-2026-10-31.md`)** — Añadir al pipeline de release: `go vet`, `go test`, `govulncheck`, SBOM y secret scanning; revisar que binarios/artefactos no embeben credenciales. Relacionado con SEC-31-08 (CI de seguridad) y CRA/SBOM. [cli]
 
