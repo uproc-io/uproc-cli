@@ -18,5 +18,7 @@ func newDocumentIngestCmd() *cobra.Command {
 	// Action commands (reprocess requires user session auth, not API key —
 	// added later when CLI supports login flow)
 	// cmd.AddCommand(newDocumentIngestReprocessCmd())
+	// Upload command
+	cmd.AddCommand(newDocumentIngestUploadCmd())
 	return cmd
 }

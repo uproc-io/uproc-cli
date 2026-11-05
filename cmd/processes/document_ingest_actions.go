@@ -1,8 +1,11 @@
 package processes
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 )
@@ -132,4 +135,80 @@ func newDocumentIngestReprocessCmd() *cobra.Command {
 
 	cmd.Flags().StringVarP(&mode, "mode", "m", "auto", "Reprocess mode: auto, full, or fields-only")
 	return cmd
+}
+
+func newDocumentIngestUploadCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "upload <file_path_or_pattern...>",
+		Short: "Upload a PDF document to document-ingest for extraction",
+		Args:  cobra.MinimumNArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			client, err := mustClient()
+			if err != nil {
+				return err
+			}
+
+			uploadPaths, err := resolveUploadPaths(args)
+			if err != nil {
+				return err
+			}
+
+			total := len(uploadPaths)
+			success := 0
+			failed := make([]string, 0)
+
+			path := "/api/v1/external/modules/document-ingest/collections/uploads/inputs/file"
+
+			for index, filePath := range uploadPaths {
+				fmt.Fprintf(cmd.OutOrStdout(), "[%d/%d] uploading: %s\n", index+1, total, filePath)
+
+				content, readErr := os.ReadFile(filePath)
+				if readErr != nil {
+					fmt.Fprintf(cmd.OutOrStdout(), "FAIL %s -> %v\n", filePath, readErr)
+					failed = append(failed, filePath)
+					continue
+				}
+
+				payload := map[string]string{
+					"file_name": filepath.Base(filePath),
+					"content":   base64.StdEncoding.EncodeToString(content),
+				}
+
+				b, marshalErr := json.Marshal(payload)
+				if marshalErr != nil {
+					fmt.Fprintf(cmd.OutOrStdout(), "FAIL %s -> %v\n", filePath, marshalErr)
+					failed = append(failed, filePath)
+					continue
+				}
+
+				body, _, reqErr := client.Do("POST", path, b)
+				if reqErr != nil {
+					fmt.Fprintf(cmd.OutOrStdout(), "FAIL %s -> %v\n", filePath, reqErr)
+					failed = append(failed, filePath)
+					continue
+				}
+
+				// Check success in response
+				var resp map[string]any
+				if json.Unmarshal(body, &resp) == nil {
+					if successVal, ok := resp["success"].(bool); ok && !successVal {
+						msg := fmt.Sprintf("%v", resp["message"])
+						fmt.Fprintf(cmd.OutOrStdout(), "FAIL %s -> %s\n", filePath, msg)
+						failed = append(failed, filePath)
+						continue
+					}
+				}
+
+				success++
+				fmt.Fprintf(cmd.OutOrStdout(), "OK   %s\n", filePath)
+			}
+
+			fmt.Fprintf(cmd.OutOrStdout(), "Uploaded: %d/%d\n", success, total)
+			if len(failed) > 0 {
+				return fmt.Errorf("%d upload(s) failed", len(failed))
+			}
+
+			return nil
+		},
+	}
 }
