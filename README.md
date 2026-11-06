@@ -644,7 +644,7 @@ uproc applications admin usage list [--customer-id 1 --module-slug financial-rec
 uproc applications admin usage summary [--customer-id 1 --module-slug financial-reconciliation --source mcp --from-date 2026-06-01 --to-date 2026-06-05]
 uproc applications admin audit list [--module-slug data-process --result failed --actor-type agent --entity-type tool --trace-id <trace_id> --from-date 2026-01-01 --to-date 2026-12-31 --page 1 --page-size 25]
 uproc applications admin audit show <record_id>
-uproc applications admin audit capture [--out docs/plans/data-process-issues --module-slug data-process --entity-type tool --from-date 2026-01-01 --dry-run]
+uproc applications admin audit capture [--out docs/plans/issues/data-process --module-slug data-process --entity-type tool --from-date 2026-01-01 --dry-run]
 uproc applications admin changelog
 ```
 

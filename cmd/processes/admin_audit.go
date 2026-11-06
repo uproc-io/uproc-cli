@@ -152,7 +152,7 @@ func newAdminAuditCaptureCmd() *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "capture",
-		Short: "Detect no-result data-process tool traces and write them to docs/plans/data-process-issues",
+		Short: "Detect no-result data-process tool traces and write them to docs/plans/issues/data-process",
 		Long: `Walk the admin audit trail, detect data-process tool calls with no result
 (audit after.matched = false, run free_reason = no_result, or reason = no_result)
 and write one markdown occurrence per detection under:
@@ -161,9 +161,9 @@ and write one markdown occurrence per detection under:
 
 Emails and IP addresses are redacted by default. Existing occurrence files are
 never overwritten (dedupe by file name / trace). Use --dry-run to preview.`,
-		Example: `  uproc applications admin audit capture --out developments/backend/docs/plans/data-process-issues
-  uproc applications admin audit capture --out docs/plans/data-process-issues --dry-run
-  uproc applications admin audit capture --out docs/plans/data-process-issues --from-date 2026-01-01 --page-size 100`,
+		Example: `  uproc applications admin audit capture --out developments/backend/docs/plans/issues/data-process
+  uproc applications admin audit capture --out docs/plans/issues/data-process --dry-run
+  uproc applications admin audit capture --out docs/plans/issues/data-process --from-date 2026-01-01 --page-size 100`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			client, err := mustClient()
 			if err != nil {
@@ -257,7 +257,7 @@ never overwritten (dedupe by file name / trace). Use --dry-run to preview.`,
 		},
 	}
 
-	cmd.Flags().StringVar(&outDir, "out", "docs/plans/data-process-issues", "output folder (backend docs/plans/data-process-issues)")
+	cmd.Flags().StringVar(&outDir, "out", "docs/plans/issues/data-process", "output folder (backend docs/plans/issues/data-process)")
 	cmd.Flags().StringVar(&moduleSlug, "module-slug", "data-process", "audit module slug to scan")
 	cmd.Flags().StringVar(&entityType, "entity-type", "tool", "audit entity type to scan")
 	cmd.Flags().StringVar(&fromDate, "from-date", "", "start date (YYYY-MM-DD or RFC3339)")
