@@ -11,22 +11,32 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// NewAdminChildren builds a fresh set of admin resource commands. A fresh tree
+// is required because cobra commands cannot be attached to two parents, and the
+// same resources are exposed both under `uproc applications admin ...` and the
+// top-level `uproc admin ...` (parity with the web `/admin` section).
+func NewAdminChildren() []*cobra.Command {
+	return []*cobra.Command{
+		newAdminUsersCmd(),
+		newAdminCustomersCmd(),
+		newAdminCredentialsCmd(),
+		newAdminModulesCmd(),
+		newAdminTicketsCmd(),
+		newAdminLogsCmd(),
+		newAdminAIRequestsCmd(),
+		newAdminUsageCmd(),
+		newAdminAuditCmd(),
+		newAdminChangelogCmd(),
+	}
+}
+
 func newAdminCmd() *cobra.Command {
 	adminCmd := &cobra.Command{
 		Use:   "admin",
 		Short: "Admin commands for external API",
 	}
 
-	adminCmd.AddCommand(newAdminUsersCmd())
-	adminCmd.AddCommand(newAdminCustomersCmd())
-	adminCmd.AddCommand(newAdminCredentialsCmd())
-	adminCmd.AddCommand(newAdminModulesCmd())
-	adminCmd.AddCommand(newAdminTicketsCmd())
-	adminCmd.AddCommand(newAdminLogsCmd())
-	adminCmd.AddCommand(newAdminAIRequestsCmd())
-	adminCmd.AddCommand(newAdminUsageCmd())
-	adminCmd.AddCommand(newAdminAuditCmd())
-	adminCmd.AddCommand(newAdminChangelogCmd())
+	adminCmd.AddCommand(NewAdminChildren()...)
 
 	return adminCmd
 }

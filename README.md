@@ -622,31 +622,38 @@ All business-verb list commands use the same read flags as the generic module co
 
 ### Admin commands
 
+Admin commands are available both at the top level (`uproc admin ...`, mirroring
+the web `/admin` section) and under `uproc applications admin ...` (backwards
+compatibility). Both forms are equivalent.
+
 ```bash
-uproc applications admin users list [--customer-id 1]
-uproc applications admin users get <user_id>
+uproc admin users list [--customer-id 1]
+uproc admin users get <user_id>
 
-uproc applications admin customers list
-uproc applications admin customers get <customer_id>
+uproc admin customers list
+uproc admin customers get <customer_id>
 
-uproc applications admin credentials list [--customer-id 1 --category ai --type api_key]
-uproc applications admin credentials get <credential_id>
+uproc admin credentials list [--customer-id 1 --category ai --type api_key]
+uproc admin credentials get <credential_id>
 
-uproc applications admin modules list
-uproc applications admin modules get <module_slug>
+uproc admin modules list
+uproc admin modules get <module_slug>
 
-uproc applications admin tickets list
-uproc applications admin tickets get <ticket_id>
+uproc admin tickets list
+uproc admin tickets get <ticket_id>
 
-uproc applications admin logs --module-slug <module_slug> [--level all --page 1]
-uproc applications admin ai-requests [--customer-id 1 --module-slug financial-reconciliation --page 1 --limit 25]
-uproc applications admin usage list [--customer-id 1 --module-slug financial-reconciliation --source all --from-date 2026-06-01 --to-date 2026-06-05 --page 1 --limit 25]
-uproc applications admin usage summary [--customer-id 1 --module-slug financial-reconciliation --source mcp --from-date 2026-06-01 --to-date 2026-06-05]
-uproc applications admin audit list [--module-slug data-process --result failed --actor-type agent --entity-type tool --trace-id <trace_id> --from-date 2026-01-01 --to-date 2026-12-31 --page 1 --page-size 25]
-uproc applications admin audit show <record_id>
-uproc applications admin audit capture [--out docs/plans/issues/data-process --module-slug data-process --entity-type tool --from-date 2026-01-01 --dry-run]
-uproc applications admin changelog
+uproc admin logs --module-slug <module_slug> [--level all --page 1]
+uproc admin ai-requests [--customer-id 1 --module-slug financial-reconciliation --page 1 --limit 25]
+uproc admin usage list [--customer-id 1 --module-slug financial-reconciliation --source all --from-date 2026-06-01 --to-date 2026-06-05 --page 1 --limit 25]
+uproc admin usage summary [--customer-id 1 --module-slug financial-reconciliation --source mcp --from-date 2026-06-01 --to-date 2026-06-05]
+uproc admin audit list [--module-slug data-process --result failed --actor-type agent --entity-type tool --trace-id <trace_id> --from-date 2026-01-01 --to-date 2026-12-31 --page 1 --page-size 25]
+uproc admin audit show <record_id>
+uproc admin audit capture [--out docs/plans/issues/data-process --module-slug data-process --entity-type tool --from-date 2026-01-01 --dry-run]
+uproc admin changelog
+uproc admin license status|check|force|unforce
 ```
+
+The same commands are still accepted as `uproc applications admin ...`.
 
 These commands wrap the existing external admin read endpoints.
 

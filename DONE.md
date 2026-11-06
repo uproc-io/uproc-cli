@@ -2,6 +2,8 @@
 
 ## 2026-11-06
 
+- **CLI — `admin` como grupo top-level (`uproc admin …`) (HECHO 2026-11-06 · T1 · cli)** — Los recursos admin (`users`, `customers`, `credentials`, `modules`, `tickets`, `logs`, `ai-requests`, `usage`, `audit`, `changelog`) se exponen ahora también en la raíz, en paridad con la sección `/admin` del frontend, junto a `license`. `uproc applications admin …` sigue aceptado (misma implementación vía `NewAdminChildren()`, árboles frescos para cobra). README y docs CLI EN/ES/CA actualizados. Gates: `gofmt`, `go vet`, `go test ./...` verdes (66 tests). `[cli]`
+
 - **CLI admin audit capture — intake automático de tools sin resultado (HECHO 2026-11-06 · T2 · cli)** — Nuevo `uproc applications admin audit capture` que recorre `/api/v1/external/admin/audit` (module/entity/date), detecta `no_result` (`after.matched=false`, `free_reason=no_result` o `reason=no_result`) y escribe una ocurrencia markdown por detección en `<out>/<tool>/occurrences/<fecha>-<trace>.md`. Dedupe por fichero, `--dry-run`, `--max-pages`, y **redacción de email/IP por defecto** (`--include-raw` solo local). Tests: `admin_audit_test.go` (helpers + redacción + dedupe + dry-run) → 72 passed; `gofmt`, `go vet`, `go test ./...` y build verdes. `[cli]`
 
 ## 2026-11-06
