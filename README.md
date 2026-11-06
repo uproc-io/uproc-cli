@@ -642,6 +642,8 @@ uproc applications admin logs --module-slug <module_slug> [--level all --page 1]
 uproc applications admin ai-requests [--customer-id 1 --module-slug financial-reconciliation --page 1 --limit 25]
 uproc applications admin usage list [--customer-id 1 --module-slug financial-reconciliation --source all --from-date 2026-06-01 --to-date 2026-06-05 --page 1 --limit 25]
 uproc applications admin usage summary [--customer-id 1 --module-slug financial-reconciliation --source mcp --from-date 2026-06-01 --to-date 2026-06-05]
+uproc applications admin audit list [--module-slug data-process --result failed --actor-type agent --entity-type tool --trace-id <trace_id> --from-date 2026-01-01 --to-date 2026-12-31 --page 1 --page-size 25]
+uproc applications admin audit show <record_id>
 uproc applications admin changelog
 ```
 

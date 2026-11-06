@@ -25,6 +25,7 @@ func newAdminCmd() *cobra.Command {
 	adminCmd.AddCommand(newAdminLogsCmd())
 	adminCmd.AddCommand(newAdminAIRequestsCmd())
 	adminCmd.AddCommand(newAdminUsageCmd())
+	adminCmd.AddCommand(newAdminAuditCmd())
 	adminCmd.AddCommand(newAdminChangelogCmd())
 
 	return adminCmd

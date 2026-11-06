@@ -1,5 +1,9 @@
 # DONE
 
+## 2026-11-06
+
+- **CLI admin audit — recuperar traces por módulo/entidad/resultado (HECHO 2026-11-06 · T1 · cli+back)** — Nuevo `uproc applications admin audit list|show` que replica Admin > Sistema > Auditoría. `list` filtra por `--module-slug`, `--action`, `--actor-type`, `--entity-type`, `--entity-id`, `--trace-id`, `--result`, `--policy-result`, `--from-date/--to-date`, `--customer-id` (superadmin) y paginación; `show <record_id>` devuelve la traza completa con `before`/`after`/`diff` y el payload del run de data-process. Backend: wrapper `/api/v1/external/admin/audit` y `/api/v1/external/admin/audit/{record_id}` reutilizando la lógica y el scoping del router interno (admin → su customer; superadmin → cualquiera). Tests: `test_admin.py` 30 passed; `gofmt`, `go vet`, `go test ./...` y build verdes. `[cli]+[back]`
+
 ## 2026-10-31
 
 - **Data Management — comandos de calidad de datos (HECHO · T2 · cli)** — Nuevo `uproc applications data-management quality` con `get`, `analyze`, `rules` (accept/reject de reglas inferidas) y `correct` (preview por defecto, `--apply` para aplicar). Consume los endpoints externos `/api/v1/external/data-management/quality*`; `gofmt`, `go vet`, `go test ./...` y build verdes. `[cli]`
