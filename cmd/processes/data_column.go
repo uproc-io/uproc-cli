@@ -11,10 +11,18 @@ import (
 func NewDataColumnCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "column",
-		Short: "Data-management column commands",
+		Short: "DEPRECATED: use 'applications data-management update-column'",
 	}
 
 	cmd.AddCommand(newDataColumnUpdateCmd())
+	return cmd
+}
+
+// NewUpdateColumnCmd exposes the data-management column update as
+// `uproc applications data-management update-column`.
+func NewUpdateColumnCmd() *cobra.Command {
+	cmd := newDataColumnUpdateCmd()
+	cmd.Use = "update-column"
 	return cmd
 }
 

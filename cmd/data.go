@@ -7,8 +7,9 @@ import (
 
 func newDataCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "data",
-		Short: "Data workflows",
+		Use:    "data",
+		Short:  "DEPRECATED: use 'applications data-management update-column'",
+		Hidden: true,
 	}
 
 	cmd.AddCommand(processes.NewDataColumnCmd())

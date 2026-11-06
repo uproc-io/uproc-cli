@@ -21,6 +21,7 @@ func newDataManagementCmd() *cobra.Command {
 	cmd.AddCommand(newDMListTablesCmd())
 	cmd.AddCommand(newDMCreateTableCmd())
 	cmd.AddCommand(newDMListColumnsCmd())
+	cmd.AddCommand(NewUpdateColumnCmd())
 	cmd.AddCommand(newDMEnqueueImportCmd())
 	cmd.AddCommand(newDMGetUploadStatusCmd())
 	cmd.AddCommand(newDMGetLatestUploadCmd())

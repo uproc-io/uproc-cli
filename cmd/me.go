@@ -43,7 +43,9 @@ func newMeCmd() *cobra.Command {
 }
 
 func newMeGetCmd() *cobra.Command {
-	return &cobra.Command{
+	var asJSON bool
+
+	cmd := &cobra.Command{
 		Use:   "get",
 		Short: "Show the connected user's profile",
 		Args:  cobra.NoArgs,
@@ -56,9 +58,14 @@ func newMeGetCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			return printJSON(cmd, body)
+			if asJSON {
+				return printJSON(cmd, body)
+			}
+			return printFriendlyProfile(cmd, body)
 		},
 	}
+	cmd.Flags().BoolVar(&asJSON, "json", false, "print the raw JSON response instead of the friendly summary")
+	return cmd
 }
 
 func newMeUpdateCmd() *cobra.Command {
@@ -87,7 +94,27 @@ func newMeUpdateCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			return printJSON(cmd, respBody)
+			return printMeUpdateResult(cmd, respBody)
 		},
 	}
+}
+
+func printMeUpdateResult(cmd *cobra.Command, body []byte) error {
+	var root struct {
+		Success bool   `json:"success"`
+		Message string `json:"message"`
+	}
+	if err := json.Unmarshal(body, &root); err != nil {
+		fmt.Fprintln(cmd.OutOrStdout(), strings.TrimSpace(string(body)))
+		return nil
+	}
+	if !root.Success {
+		message := strings.TrimSpace(root.Message)
+		if message == "" {
+			message = "Could not update the profile."
+		}
+		return fmt.Errorf("%s", message)
+	}
+	fmt.Fprintln(cmd.OutOrStdout(), "Profile updated.")
+	return nil
 }

@@ -19,6 +19,8 @@ func NewAdminCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(processes.NewAdminChildren()...)
+	cmd.AddCommand(processes.NewInstallCmd())
+	cmd.AddCommand(processes.NewUpdateCmd())
 	cmd.AddCommand(NewLicenseCmd())
 	return cmd
 }

@@ -7,6 +7,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// NewInstallCmd exposes the customer installation plan under `uproc admin install`.
+func NewInstallCmd() *cobra.Command {
+	return newInstallCmd()
+}
+
 func newInstallCmd() *cobra.Command {
 	var dryRun bool
 

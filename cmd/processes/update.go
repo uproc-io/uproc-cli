@@ -27,6 +27,11 @@ type updateCheckRow struct {
 	Status   string
 }
 
+// NewUpdateCmd exposes the update verification checks under `uproc admin update`.
+func NewUpdateCmd() *cobra.Command {
+	return newUpdateCmd()
+}
+
 func newUpdateCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update",

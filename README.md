@@ -253,6 +253,9 @@ uproc applications data-management quality analyze --entity-slug clientes
 uproc applications data-management quality rules --entity-slug clientes --column-key email --accept regex:email
 uproc applications data-management quality correct --entity-slug clientes --column-key email --apply
 uproc applications data-management quality rows --entity-slug clientes --column-key email --rule regex:email
+uproc applications data-management update-column --entity-slug dm-pacientes --column-key centro_id --type relation --relation-entity-slug dm-centros
+uproc applications data-management update-column --entity-slug dm-pacientes --column-key nombre_paciente --editable false
+uproc applications data-management update-column --entity-id 123 --column-id 456 --editable false --visible false
 ```
 
 The export contains only Data Management tables, columns, rows, and relations. It also writes an export report to `<output>.report.json` (and embeds `export_report.json` inside the ZIP) that summarizes relation integrity per entity/column, including unresolved references (`missing`/`non_numeric`) and ignored non-positive references, without exposing row values. Import without `--confirm` is a preview; confirming replaces all Data Management data for the authenticated customer. It does not transfer users, credentials, customer settings, or file attachments.
@@ -260,9 +263,12 @@ The export contains only Data Management tables, columns, rows, and relations. I
 ### Profile (connected user)
 
 ```bash
-uproc me get
+uproc me get              # friendly summary (name, email, role, customer, modules, ...)
+uproc me get --json       # raw JSON response
 uproc me update first_name=Jane language=es default_app=data-process
 ```
+
+`me get` prints a human-readable profile by default; use `--json` for scripting.
 
 ### Forms commands
 
@@ -622,9 +628,8 @@ All business-verb list commands use the same read flags as the generic module co
 
 ### Admin commands
 
-Admin commands are available both at the top level (`uproc admin ...`, mirroring
-the web `/admin` section) and under `uproc applications admin ...` (backwards
-compatibility). Both forms are equivalent.
+Admin commands live at the top level (`uproc admin ...`), mirroring the web
+`/admin` section. This includes license, customer installation and update checks.
 
 ```bash
 uproc admin users list [--customer-id 1]
@@ -651,28 +656,24 @@ uproc admin audit show <record_id>
 uproc admin audit capture [--out docs/plans/issues/data-process --module-slug data-process --entity-type tool --from-date 2026-01-01 --dry-run]
 uproc admin changelog
 uproc admin license status|check|force|unforce
+uproc admin install <USER_API_KEY> --dry-run
+uproc admin update check <USER_API_KEY>
 ```
-
-The same commands are still accepted as `uproc applications admin ...`.
 
 These commands wrap the existing external admin read endpoints.
-
-```bash
-uproc applications admin changelog
-```
 
 Admin create/update subcommands are currently hidden from help output.
 Admin create/update commands run interactive contract mode (contracts fetched from API):
 
 ```bash
-uproc applications admin users create
-uproc applications admin users update
-uproc applications admin customers create
-uproc applications admin customers update
-uproc applications admin credentials create
-uproc applications admin credentials update
-uproc applications admin tickets create
-uproc applications admin tickets update
+uproc admin users create
+uproc admin users update
+uproc admin customers create
+uproc admin customers update
+uproc admin credentials create
+uproc admin credentials update
+uproc admin tickets create
+uproc admin tickets update
 ```
 
 All admin commands use external API endpoints under `/api/v1/external/admin/*`, except ticket commands that use `/api/v1/external/tickets/*`.
@@ -697,7 +698,7 @@ uproc> exit
 ### Install plan (dry-run)
 
 ```bash
-uproc applications install <USER_API_KEY> --dry-run
+uproc admin install <USER_API_KEY> --dry-run
 ```
 
 This command fetches `/api/v1/external/install` and shows the full installation plan (release versions, required services, and ordered steps) without executing changes on the server.
@@ -705,7 +706,7 @@ This command fetches `/api/v1/external/install` and shows the full installation 
 ### Update check (dry-run only)
 
 ```bash
-uproc applications update check <USER_API_KEY>
+uproc admin update check <USER_API_KEY>
 ```
 
 This command validates update readiness using `/api/v1/external/install?dry_run=true` plus local read-only checks (docker, dokploy, required services, required env vars, and health endpoints). It never executes deployment/apply actions.

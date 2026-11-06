@@ -65,9 +65,6 @@ func buildProcessChildren() []*cobra.Command {
 		newInvoiceIngestCmd(),
 
 		// === Admin & system ===
-		newAdminCmd(),
-		newInstallCmd(),
-		newUpdateCmd(),
 		newInteractiveCmd(),
 
 		// === Hidden aliases (backwards compatibility) ===
