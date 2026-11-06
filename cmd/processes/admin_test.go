@@ -21,6 +21,7 @@ func TestNewAdminCmdContainsExpectedResources(t *testing.T) {
 		"logs":        false,
 		"ai-requests": false,
 		"usage":       false,
+		"audit":       false,
 		"changelog":   false,
 	}
 

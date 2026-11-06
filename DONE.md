@@ -2,6 +2,10 @@
 
 ## 2026-11-06
 
+- **CLI admin audit capture — intake automático de tools sin resultado (HECHO 2026-11-06 · T2 · cli)** — Nuevo `uproc applications admin audit capture` que recorre `/api/v1/external/admin/audit` (module/entity/date), detecta `no_result` (`after.matched=false`, `free_reason=no_result` o `reason=no_result`) y escribe una ocurrencia markdown por detección en `<out>/<tool>/occurrences/<fecha>-<trace>.md`. Dedupe por fichero, `--dry-run`, `--max-pages`, y **redacción de email/IP por defecto** (`--include-raw` solo local). Tests: `admin_audit_test.go` (helpers + redacción + dedupe + dry-run) → 72 passed; `gofmt`, `go vet`, `go test ./...` y build verdes. `[cli]`
+
+## 2026-11-06
+
 - **CLI admin audit — recuperar traces por módulo/entidad/resultado (HECHO 2026-11-06 · T1 · cli+back)** — Nuevo `uproc applications admin audit list|show` que replica Admin > Sistema > Auditoría. `list` filtra por `--module-slug`, `--action`, `--actor-type`, `--entity-type`, `--entity-id`, `--trace-id`, `--result`, `--policy-result`, `--from-date/--to-date`, `--customer-id` (superadmin) y paginación; `show <record_id>` devuelve la traza completa con `before`/`after`/`diff` y el payload del run de data-process. Backend: wrapper `/api/v1/external/admin/audit` y `/api/v1/external/admin/audit/{record_id}` reutilizando la lógica y el scoping del router interno (admin → su customer; superadmin → cualquiera). Tests: `test_admin.py` 30 passed; `gofmt`, `go vet`, `go test ./...` y build verdes. `[cli]+[back]`
 
 ## 2026-10-31
