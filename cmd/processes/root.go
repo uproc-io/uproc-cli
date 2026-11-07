@@ -60,6 +60,7 @@ func buildProcessChildren() []*cobra.Command {
 		newDebtTrackCmd(),
 		newLeadIntelligenceCmd(),
 		newDataManagementCmd(),
+		newCustomDashboardCmd(),
 		newFormGeneratorCmd(),
 		newDocumentIngestCmd(),
 		newInvoiceIngestCmd(),

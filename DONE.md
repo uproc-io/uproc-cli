@@ -1,5 +1,9 @@
 # DONE
 
+## 2026-11-07
+
+- **CLI — `applications custom-dashboard export-setup/import-setup` (HECHO 2026-11-07 · T1 · cli)** — Nuevo grupo `custom-dashboard` para mover la configuración del dashboard entre entornos sin tocar usuarios ni datos DM. `export-setup --customer-id 51 -o dashboard.json` guarda `layout_json` (páginas/bloques/`summary.queries`), `dashboard_sections` y `entity_mappings`; `import-setup --file dashboard.json` hace preview (`dry_run`) y `--confirm` aplica (upsert de layout/sections/mappings, invalida caché). README actualizado junto a `data-management export-transfer/import-transfer`. Gates: `gofmt`, `go vet ./...`, `go test ./...` (74 passed), `go build` correcto. `[cli]`
+
 ## 2026-11-06
 
 - **CLI — `me get` con salida amigable (HECHO 2026-11-06 · T1 · cli)** — `uproc me get` muestra un resumen legible (nombre, email, rol, idioma, cliente, app por defecto, módulos y firma) con `tabwriter`, en vez de JSON crudo; `--json` conserva la salida original para scripting. `me update` responde con confirmación o error legible. Tests `me_render_test` (2) → 74 passed. `[cli]`

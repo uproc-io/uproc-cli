@@ -260,6 +260,16 @@ uproc applications data-management update-column --entity-id 123 --column-id 456
 
 The export contains only Data Management tables, columns, rows, and relations. It also writes an export report to `<output>.report.json` (and embeds `export_report.json` inside the ZIP) that summarizes relation integrity per entity/column, including unresolved references (`missing`/`non_numeric`) and ignored non-positive references, without exposing row values. Import without `--confirm` is a preview; confirming replaces all Data Management data for the authenticated customer. It does not transfer users, credentials, customer settings, or file attachments.
 
+### Custom dashboard setup
+
+```bash
+uproc applications custom-dashboard export-setup --customer-id 51 -o hospicare_dashboard.json
+uproc applications custom-dashboard import-setup --customer-id 51 --file hospicare_dashboard.json
+uproc applications custom-dashboard import-setup --customer-id 51 --file hospicare_dashboard.json --confirm
+```
+
+The setup bundle contains `layout_json` (pages, blocks and `summary.queries`), `dashboard_sections` and `entity_mappings`. It never contains users, passwords, secrets or Data Management rows; use the Data Management transfer above for the data. Import without `--confirm` is a preview (`dry_run`); confirming updates the active layout, replaces the registered sections and upserts mappings by `logical_entity`, then invalidates the dashboard cache.
+
 ### Profile (connected user)
 
 ```bash
