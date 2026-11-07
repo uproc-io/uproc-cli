@@ -2,7 +2,7 @@
 
 ## 2026-11-07
 
-- **CLI — `applications custom-dashboard export-setup/import-setup` (HECHO 2026-11-07 · T1 · cli)** — Nuevo grupo `custom-dashboard` para mover la configuración del dashboard entre entornos sin tocar usuarios ni datos DM. `export-setup --customer-id 51 -o dashboard.json` guarda `layout_json` (páginas/bloques/`summary.queries`), `dashboard_sections` y `entity_mappings`; `import-setup --file dashboard.json` hace preview (`dry_run`) y `--confirm` aplica (upsert de layout/sections/mappings, invalida caché). README actualizado junto a `data-management export-transfer/import-transfer`. Gates: `gofmt`, `go vet ./...`, `go test ./...` (74 passed), `go build` correcto. `[cli]`
+- **CLI — `applications custom-dashboard export-setup/import-setup` (HECHO 2026-11-07 · T1 · cli)** — Nuevo grupo `custom-dashboard` para mover la configuración del dashboard entre entornos sin tocar usuarios ni datos DM. `export-setup --customer-id 51 -o dashboard.json` (API external `/api/v1/external/admin/customers/{id}/custom-dashboard/export-setup`) guarda `layout_json` (páginas/bloques/`summary.queries`), `dashboard_sections` y `entity_mappings`; `import-setup --file dashboard.json` (API external `/api/v1/external/admin/customers/{id}/custom-dashboard/import-setup`) hace preview (`dry_run`) y `--confirm` aplica (upsert de layout/sections/mappings, invalida caché). README actualizado junto a `data-management export-transfer/import-transfer`. Gates: `gofmt`, `go vet ./...`, `go test ./...` (74 passed), `go build` correcto. `[cli]`
 
 ## 2026-11-06
 

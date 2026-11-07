@@ -42,7 +42,7 @@ Examples:
 				return err
 			}
 			path := fmt.Sprintf(
-				"/api/v1/admin/customers/%d/custom-dashboard/export-setup",
+				"/api/v1/external/admin/customers/%d/custom-dashboard/export-setup",
 				customerID,
 			)
 			response, status, reqErr := client.Do("GET", path, nil)
@@ -118,7 +118,7 @@ Examples:
 				return err
 			}
 			path := fmt.Sprintf(
-				"/api/v1/admin/customers/%d/custom-dashboard/import-setup",
+				"/api/v1/external/admin/customers/%d/custom-dashboard/import-setup",
 				customerID,
 			)
 			response, status, reqErr := client.Do("POST", path, body)
