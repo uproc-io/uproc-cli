@@ -268,7 +268,7 @@ uproc applications custom-dashboard import-setup --customer-id 51 --file hospica
 uproc applications custom-dashboard import-setup --customer-id 51 --file hospicare_dashboard.json --confirm
 ```
 
-The setup bundle contains `layout_json` (pages, blocks and `summary.queries`), `dashboard_sections` and `entity_mappings`. It never contains users, passwords, secrets or Data Management rows; use the Data Management transfer above for the data. Import without `--confirm` is a preview (`dry_run`); confirming updates the active layout, replaces the registered sections and upserts mappings by `logical_entity`, then invalidates the dashboard cache.
+The setup bundle is for the **external dashboard** (Hospicare V1), not the generic layout. It contains `summary_queries`, `entity_mappings`, `permissions` (role widget allowlist) and `modules` (`custom-dashboard`, `data-management`). It never contains users, passwords, secrets or Data Management rows; use the Data Management transfer above for the data. Import without `--confirm` is a preview (`dry_run`); confirming upserts the external dashboard config, mappings, role permissions and modules, then invalidates the dashboard cache. It does not touch `customer_custom_dashboards.layout_json` (the generic dashboard).
 
 ### Profile (connected user)
 
